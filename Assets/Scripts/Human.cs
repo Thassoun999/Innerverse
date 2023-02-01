@@ -2,19 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MyceliumScript : MonoBehaviour
+public class Human : MonoBehaviour
 {
 
-     // ~ Instance and Variables ~
+    // ~ Instances and Variables ~
 
-    // Every individual mecylium clump (1 per occupied grid node) will have their own private info
-    private static int row;
-    private static int col;
+    private int row;
+    private int col;
 
 
     // ~ Properties ~
-    
-    public static int[] Coordinates{
+    public int[] Coordinates{
         get {
             return new int[] { row, col };
         }
@@ -30,16 +28,17 @@ public class MyceliumScript : MonoBehaviour
         }
     }
 
-    // Awake is called when the script is instantied (per instance)
+    // Awake is called before the game starts -- use this to set up references (does not need to be enabled)
     void Awake()
     {
-        // On awake, get your coordinate system! Possibly through the game manager
+
     }
 
-    // Start is called before the first frame update
+    // Start is called before the first frame update (script is enabled)
     void Start()
     {
-        
+        // On awake, get your coordinate system! Possibly through the game manager
+        // Also get the coordinate system of your "available" neighbors -- on update check if this changes for yourself
     }
 
     // Update is called once per frame

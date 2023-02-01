@@ -9,8 +9,10 @@ public class GameManager : MonoBehaviour
     // ~ Instance and Variables ~
 
     // Assuring that only the GameManager class can modify this and that it's shared through all instances of the GameManager class in different scripts
+    // Static members can also be accessed directly from a class without instantiating an object of the class first.
     private static GameManager _instance;
-
+    private bool isPlayerTurn;
+    private List<string> actions; // Based on Action Points and selections, add actions to list to execute
 
     // ~ Properties ~
 
@@ -47,12 +49,28 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        isPlayerTurn = true;
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    void advanceTurn() {
+        // Perform selected actions based on whose turn it is
+        
+        // Mycelium actions
+        if (isPlayerTurn) {
+            // ...
+        } else { // Human actions
+            // ...
+        }
+        
+        
+        isPlayerTurn = !isPlayerTurn; // switch our boolean
+        actions.Clear(); // empty our actions list for the next turn group
+
     }
 }
