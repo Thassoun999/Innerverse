@@ -49,7 +49,7 @@ public class Mycelium : MonoBehaviour
     
     void OnDestroy()
     {
-        GameManager.Instance.removeHuman(this.GetInstanceID());
+        GameManager.Instance.removeMycelium(this.gameObject.GetInstanceID());
     }
 
     // Update is called once per frame

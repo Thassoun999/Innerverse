@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     private Dictionary<int, Mycelium> _MyceliumGroup; // instanceId to ref game object
     private int _MyceliumCount; // Comparing this with the grid count and human count helps to know if mycelium wins
     
+    private int test;
+
     // ~ Properties ~
 
     // Encapsulation -- For other classes to access our unique instance, we are creating a public property with just a get option (get or set member variables of class)
@@ -146,8 +148,17 @@ public class GameManager : MonoBehaviour
             _TwoDimensionalGridMap[row].Sort(); // sort the columns now
         }
 
+        // Declare dictionnaries
+        _HumanGroup = new Dictionary<int, Human>();
+        _MyceliumGroup = new Dictionary<int, Mycelium>();
+
         // Spawn our first Mycelium and make sure to add to necessary groups
-        SpawnManager.Instance.Spawn(1, 1, "Myc");
+        int referenceID;
+        GameObject temp;
+
+        (referenceID, temp) = SpawnManager.Instance.Spawn(1, 1, "Myc");
+        _MyceliumGroup[referenceID] = GetComponent(typeof(Mycelium)) as Mycelium;
+        _MyceliumCount++;
     }
 
     // Update is called once per frame
@@ -160,6 +171,8 @@ public class GameManager : MonoBehaviour
         // CHECK 2 -- Check to see if >75% of the grid map is covered (is occupied) -- Winner is whoever has higher count
 
         // CHECK 3 -- Check to see if all special biomes are controlled by either Mycelium or Human -- Winner is decided there
+
+
     }
 
     void advanceTurn() {
@@ -182,7 +195,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void addMycelium(ref Mycelium newMycelium) {
-        _MyceliumGroup[newMycelium.GetInstanceID()] = newMycelium;
+        _MyceliumGroup[newMycelium.gameObject.GetInstanceID()] = newMycelium;
         _MyceliumCount++;
         return;
     }
@@ -194,7 +207,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void addHuman(ref Human newHuman) {
-        _HumanGroup[newHuman.GetInstanceID()] = newHuman;
+        _HumanGroup[newHuman.gameObject.GetInstanceID()] = newHuman;
         _HumanCount++;
         return;
     }

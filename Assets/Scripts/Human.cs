@@ -50,7 +50,7 @@ public class Human : MonoBehaviour
 
     void OnDestroy()
     {
-        GameManager.Instance.removeHuman(this.GetInstanceID());
+        GameManager.Instance.removeHuman(this.gameObject.GetInstanceID());
     }
 
     // Update is called once per frame
