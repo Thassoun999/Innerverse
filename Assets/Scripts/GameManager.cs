@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +14,14 @@ public class GameManager : MonoBehaviour
     private static GameManager _instance;
     private bool isPlayerTurn;
     private List<string> actions; // Based on Action Points and selections, add actions to list to execute
+    private List<List<int>> _TwoDimensionalGridMap; // a 2D representation of isometric map on 2D list.
+    private Dictionary<(int, int), GridNode> _GridMap;
 
+    private Dictionary<int ,Human> _HumanGroup; // instanceId to ref game object
+    private int _HumanCount; //  Comparing this with the grid count and human count helps to know if mycelium wins
+    private Dictionary<int, Mycelium> _MyceliumGroup; // instanceId to ref game object
+    private int _MyceliumCount; // Comparing this with the grid count and human count helps to know if mycelium wins
+    
     // ~ Properties ~
 
     // Encapsulation -- For other classes to access our unique instance, we are creating a public property with just a get option (get or set member variables of class)
@@ -31,8 +39,63 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public int GridAmount
+    {
+        get {
+            return GridAmount;
+        }
+        set {
+            GridAmount = value;
+            return;
+        }
+    }
+
+    public bool PlayerTurn
+    {
+        get {
+            return isPlayerTurn;
+        }
+        set {
+            isPlayerTurn = value;
+            return;
+        }
+    }
+
+    public List<string> Actions 
+    {
+        get {
+            return actions;
+        }
+        set {
+            actions = value;
+            return;
+        }
+    }
+
+    public int MyceliumCount {
+        get {
+            return _MyceliumCount;
+        }
+
+        set {
+            _MyceliumCount = value;
+        }
+    }
+
+    public int HumanCount {
+        get {
+            return _HumanCount;
+        }
+
+        set {
+            _HumanCount = value;
+        }
+    }
+
 
     // ~ Methods ~
+
+    // Either on AWAKE or on START instantiate a starting number of humans and mycelium!
 
     void Awake()
     {
@@ -55,7 +118,13 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // WIN-LOSE Conditions!
+
+        // CHECK 1 -- Check to see if one side has a count of 0, the other side wins
+
+        // CHECK 2 -- Check to see if >75% of the grid map is covered (is occupied) -- Winner is whoever has higher count
+
+        // CHECK 3 -- Check to see if all special biomes are controlled by either Mycelium or Human -- Winner is decided there
     }
 
     void advanceTurn() {
@@ -68,9 +137,36 @@ public class GameManager : MonoBehaviour
             // ...
         }
         
-        
+
+
+        /*
+        Have this occur in a coroutine
         isPlayerTurn = !isPlayerTurn; // switch our boolean
         actions.Clear(); // empty our actions list for the next turn group
+        */
+    }
 
+    public void addMycelium(ref Mycelium newMycelium) {
+        _MyceliumGroup[newMycelium.GetInstanceID()] = newMycelium;
+        _MyceliumCount++;
+        return;
+    }
+
+    public void removeMycelium(int instanceId) {
+        _MyceliumGroup.Remove(instanceId);
+        _MyceliumCount--;
+        return;
+    }
+
+    public void addHuman(ref Human newHuman) {
+        _HumanGroup[newHuman.GetInstanceID()] = newHuman;
+        _HumanCount++;
+        return;
+    }
+
+    public void removeHuman(int instanceId) {
+        _HumanGroup.Remove(instanceId);
+        _HumanCount--;
+        return;
     }
 }

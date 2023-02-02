@@ -9,7 +9,8 @@ public class Human : MonoBehaviour
 
     private int row;
     private int col;
-
+    private int maxHealth = 10;
+    private int currHealth;
 
     // ~ Properties ~
     public int[] Coordinates{
@@ -28,6 +29,8 @@ public class Human : MonoBehaviour
         }
     }
 
+    // ~ Methods ~
+
     // Awake is called before the game starts -- use this to set up references (does not need to be enabled)
     void Awake()
     {
@@ -39,6 +42,15 @@ public class Human : MonoBehaviour
     {
         // On awake, get your coordinate system! Possibly through the game manager
         // Also get the coordinate system of your "available" neighbors -- on update check if this changes for yourself
+        row = (int)transform.localPosition.x;
+        col = (int)transform.localPosition.z;
+
+        currHealth = maxHealth;
+    }
+
+    void OnDestroy()
+    {
+        GameManager.Instance.removeHuman(this.GetInstanceID());
     }
 
     // Update is called once per frame

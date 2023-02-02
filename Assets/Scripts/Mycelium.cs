@@ -5,7 +5,7 @@ using UnityEngine;
 public class Mycelium : MonoBehaviour
 {
 
-     // ~ Instance and Variables ~
+    // ~ Instance and Variables ~
 
     // Every individual mecylium clump (1 per occupied grid node) will have their own private info
     private int row;
@@ -30,6 +30,8 @@ public class Mycelium : MonoBehaviour
         }
     }
 
+    // ~ Methods ~
+
     // Awake is called before the game starts -- use this to set up references (does not need to be enabled)
     void Awake()
     {
@@ -41,6 +43,13 @@ public class Mycelium : MonoBehaviour
     {
         // On start, get your coordinate system! Possibly through the game manager
         // Also get the coordinate system of your "available" neighbors -- on update check if this changes for yourself
+        row = (int)transform.localPosition.x;
+        col = (int)transform.localPosition.z;
+    }
+    
+    void OnDestroy()
+    {
+        GameManager.Instance.removeHuman(this.GetInstanceID());
     }
 
     // Update is called once per frame
