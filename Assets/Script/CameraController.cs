@@ -5,22 +5,22 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private Camera cam;
-    public float mouseSensitivity = 0.001f;
+    [SerializeField] private float mouseSensitivity = 0.005f;
     // last position taken on mouse button down's frame to match against new positions
     public Vector3 lastPosition;
-    [SerializeField] private float minFov = 20;
-    [SerializeField] private float maxFov = 80; 
+    public float lastSize;
+    [SerializeField] private float minSize = 2.5f;
+    [SerializeField] private float maxSize = 5f;
 
-    private int zoomSpeed = 50;
+    private float zoomSpeed = 0.5f;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
         lastPosition = transform.position;
         // ensures that the field of view is within min and max on startup
-        UpdateFov(cam.fieldOfView);
-
+        cam.orthographicSize = 4;
     }
 
     // Update is called once per frame
@@ -30,12 +30,18 @@ public class CameraController : MonoBehaviour
 
         // FOV change upon mouse scrollwheel change
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        if (scrollInput > 0){
-            cam.orthographicSize -= zoomSpeed * Time.deltaTime;
-        }
-        else if (scrollInput < 0)
-            cam.orthographicSize += zoomSpeed * Time.deltaTime;
+        if (scrollInput > 0)
+            if (cam.orthographicSize - zoomSpeed < 3)
+                return;
+            else 
+            cam.orthographicSize -= zoomSpeed;
+        if (scrollInput < 0)
+            if (cam.orthographicSize + zoomSpeed > 6)
+                return;
+            else
+                cam.orthographicSize += zoomSpeed;
     }
+
 
     void PanCamera()
     {
@@ -53,8 +59,8 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    void UpdateFov(float newFov)
+    void UpdateFov(float newSize)
     {
-        cam.fieldOfView = Mathf.Clamp(newFov, minFov, maxFov);
+        cam.orthographicSize = Mathf.Clamp(newSize, minSize, maxSize);
     }
 }
