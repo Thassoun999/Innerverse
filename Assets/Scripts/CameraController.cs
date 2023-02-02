@@ -5,18 +5,18 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField] private Camera cam;
-    [SerializeField] private float mouseSensitivity = 0.005f;
+    [SerializeField] private float mouseSensitivity = 0.05f;
     // last position taken on mouse button down's frame to match against new positions
     public Vector3 lastPosition;
     public float lastSize;
     // designated bounds for the zoom function's min and max zooms
-    [SerializeField] private float minSize = 3f;
-    [SerializeField] private float maxSize = 6f;
+    [SerializeField] private float minSize = 2f;
+    [SerializeField] private float maxSize = 7f;
     // designated field bounds for the min/max of the x and y transform position
     [SerializeField] private float minX = -6;
     [SerializeField] private float maxX = 44;
     [SerializeField] private float minY = -1;
-    [SerializeField] private float maxY = 7;
+    [SerializeField] private float maxY = 22;
     // float by which zoomSpeed will increment the orthographicSize by
     private float zoomSpeed = 0.5f;
 
