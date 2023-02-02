@@ -145,6 +145,9 @@ public class GameManager : MonoBehaviour
             _TwoDimensionalGridMap.Add(tempDict[row]); // add column list to row index
             _TwoDimensionalGridMap[row].Sort(); // sort the columns now
         }
+
+        // Spawn our first Mycelium and make sure to add to necessary groups
+        SpawnManager.Instance.Spawn(1, 1, "Myc");
     }
 
     // Update is called once per frame
