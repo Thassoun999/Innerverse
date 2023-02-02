@@ -35,7 +35,6 @@ public class GridNode : MonoBehaviour {
         occupation = 0;
         row = (int)transform.localPosition.x;
         col = (int)transform.localPosition.z;
-        // GameManager.GridAmount++;
 
     }
 

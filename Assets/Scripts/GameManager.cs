@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     private bool isPlayerTurn;
     private List<string> actions; // Based on Action Points and selections, add actions to list to execute
     private List<List<int>> _TwoDimensionalGridMap; // a 2D representation of isometric map on 2D list.
-    private Dictionary<(int, int), GridNode> _GridMap;
+    private Dictionary<(int, int), GridNode> _CoordstoGridNode;
 
     private Dictionary<int ,Human> _HumanGroup; // instanceId to ref game object
     private int _HumanCount; //  Comparing this with the grid count and human count helps to know if mycelium wins
@@ -112,7 +112,39 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isPlayerTurn = true;
+        _CoordstoGridNode = new Dictionary<(int, int), GridNode>();
+        _TwoDimensionalGridMap = new List<List<int>>();
+        GridNode[] grids;
+        grids = FindObjectsOfType<GridNode>();
+
+
+        Dictionary<int, List<int>> tempDict = new Dictionary<int,  List<int>>(); // temporary dictionary we will convert to list later
+        
+        
+        // making the 2d map representation and the grid dictionary
+        for (int i = 0; i < grids.Length; i++) {
+            int[] coords = grids[i].Coordinates;
+            _CoordstoGridNode[(coords[0], coords[1])] = grids[i];
+
+            if (tempDict.ContainsKey(coords[0])) {
+                tempDict[coords[0]].Add(coords[1]); // we will sort this by row to have an adjacency list (grid map!)
+
+            } else {
+                tempDict[coords[0]] = new List<int>(){coords[1]};
+            }
+        }
+
+        List<int> rowList = new List<int>(); // temporary row list
+        foreach(int key in tempDict.Keys) {
+            rowList.Add(key);
+        }
+        rowList.Sort(); // sort the rows
+
+        // create our two dimensional grid map
+        foreach(int row in rowList){
+            _TwoDimensionalGridMap.Add(tempDict[row]); // add column list to row index
+            _TwoDimensionalGridMap[row].Sort(); // sort the columns now
+        }
     }
 
     // Update is called once per frame
