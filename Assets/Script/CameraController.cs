@@ -11,6 +11,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float minFov = 20;
     [SerializeField] private float maxFov = 80; 
 
+    private int zoomSpeed = 50;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,10 +30,11 @@ public class CameraController : MonoBehaviour
 
         // FOV change upon mouse scrollwheel change
         float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-        if (scrollInput > 0)
-            UpdateFov(cam.fieldOfView - 1);
+        if (scrollInput > 0){
+            cam.orthographicSize -= zoomSpeed * Time.deltaTime;
+        }
         else if (scrollInput < 0)
-            UpdateFov(cam.fieldOfView + 1);
+            cam.orthographicSize += zoomSpeed * Time.deltaTime;
     }
 
     void PanCamera()
@@ -45,7 +48,7 @@ public class CameraController : MonoBehaviour
         {
             // input.mousePosition.z is always zero, use mousePosition.y
             Vector3 delta = Input.mousePosition - lastPosition;
-            transform.Translate(delta.x * mouseSensitivity, 0, delta.y * mouseSensitivity);
+            transform.Translate(-delta.x * mouseSensitivity, -delta.y * mouseSensitivity, 0);
             lastPosition = Input.mousePosition;
         }
     }
