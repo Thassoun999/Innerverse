@@ -17,15 +17,17 @@ public class GameManager : MonoBehaviour
     private List<List<int>> _TwoDimensionalGridMap; // a 2D representation of isometric map on 2D list.
     private Dictionary<(int, int), GridNode> _CoordstoGridNode;
 
-    private Dictionary<int ,Human> _HumanGroup; // instanceId to ref game object
-    private int _HumanCount; //  Comparing this with the grid count and human count helps to know if mycelium wins
-    private Dictionary<int, Mycelium> _MyceliumGroup; // instanceId to ref game object
-    private int _MyceliumCount; // Comparing this with the grid count and human count helps to know if mycelium wins
+    public Dictionary<int ,Human> _HumanGroup; // instanceId to ref game object
+    public int _HumanCount; //  Comparing this with the grid count and human count helps to know if mycelium wins
+    public Dictionary<int, Mycelium> _MyceliumGroup; // instanceId to ref game object
+    public int _MyceliumCount; // Comparing this with the grid count and human count helps to know if mycelium wins
     
     private int test;
 
-    private int maxActionPoionts = 20;
+    private int maxActionPoionts = 22;
     private int currActionPoints;
+
+    private Mycelium isSelecting; // Can't select multiple Mycelium at once!
 
     // ~ Properties ~
 
@@ -106,6 +108,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public Mycelium IsSelecting {
+        get {
+            return isSelecting;
+        }
+        set {
+            isSelecting = value;
+        }
+    }
+
     public Dictionary<(int, int), GridNode> CoordsToGridNode {
         get {
             return _CoordstoGridNode;
@@ -136,6 +147,7 @@ public class GameManager : MonoBehaviour
         _TwoDimensionalGridMap = new List<List<int>>();
         GridNode[] grids;
         grids = FindObjectsOfType<GridNode>();
+        isPlayerTurn = true; // always starts off as the player's turn
 
         //Debug.Log(grids.Length);
 
@@ -200,17 +212,9 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void advanceTurn() {
-        // Perform selected actions based on whose turn it is
-        
-        // Mycelium actions
-        if (isPlayerTurn) {
-            // ...
-        } else { // Human actions
-            // ...
-        }
-        
-
+    public void advanceTurn() {
+        // Change the turn and set to opposing action points
+        isPlayerTurn =! isPlayerTurn;
 
         /*
         Have this occur in a coroutine

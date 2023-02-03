@@ -16,6 +16,8 @@ public class GridNode : MonoBehaviour {
 
     private Mycelium myceliumSelect = null;
 
+    private GameObject standing = null;
+
     // ~ Properties ~
 
     public int[] Coordinates {
@@ -57,6 +59,15 @@ public class GridNode : MonoBehaviour {
         }
     }
 
+    public GameObject Standing {
+        get {
+            return standing;
+        }
+        set {
+            standing = value;
+        }
+    }
+
     // ~ Methods ~
 
     void Awake()
@@ -79,13 +90,46 @@ public class GridNode : MonoBehaviour {
                 myceliumSelect.GridSelect = this;
                 myceliumSelect.ActionReady = true;
                 selected = true;
+                gridHighlight.ToggleHighlightChoice(true, Color.blue);
 
             } else {
                 // Disallow Mycelium from selecting an action and clear the coordinates it has previously received
                 myceliumSelect.GridSelect = null;
                 myceliumSelect.ActionReady = false;
                 selected = false;
-                
+
+                if (occupation == 0){
+                    GridHighlight.ToggleHighlightChoice(true, Color.green);
+                } else if (occupation == 2){
+                    GridHighlight.ToggleHighlightChoice(true, Color.red);
+
+                }
+            }
+        }
+    }
+
+    public void OnMouseDownHumCall() {
+        if(clickable) {
+            if (!selected) {
+                // From here we need to send the grid coordinates to Mycelium and allow it to pick an action!
+                // This is where we pull up the wheel!
+                myceliumSelect.GridSelect = this;
+                myceliumSelect.ActionReady = true;
+                selected = true;
+                gridHighlight.ToggleHighlightChoice(true, Color.blue);
+
+            } else {
+                // Disallow Mycelium from selecting an action and clear the coordinates it has previously received
+                myceliumSelect.GridSelect = null;
+                myceliumSelect.ActionReady = false;
+                selected = false;
+
+                if (occupation == 0){
+                    GridHighlight.ToggleHighlightChoice(true, Color.green);
+                } else if (occupation == 2){
+                    GridHighlight.ToggleHighlightChoice(true, Color.red);
+
+                }
             }
         }
     }
