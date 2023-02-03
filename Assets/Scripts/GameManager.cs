@@ -17,11 +17,18 @@ public class GameManager : MonoBehaviour
     private List<List<int>> _TwoDimensionalGridMap; // a 2D representation of isometric map on 2D list.
     private Dictionary<(int, int), GridNode> _CoordstoGridNode;
 
-    private Dictionary<int ,Human> _HumanGroup; // instanceId to ref game object
-    private int _HumanCount; //  Comparing this with the grid count and human count helps to know if mycelium wins
-    private Dictionary<int, Mycelium> _MyceliumGroup; // instanceId to ref game object
-    private int _MyceliumCount; // Comparing this with the grid count and human count helps to know if mycelium wins
+    public Dictionary<int ,Human> _HumanGroup; // instanceId to ref game object
+    public int _HumanCount; //  Comparing this with the grid count and human count helps to know if mycelium wins
+    public Dictionary<int, Mycelium> _MyceliumGroup; // instanceId to ref game object
+    public int _MyceliumCount; // Comparing this with the grid count and human count helps to know if mycelium wins
     
+    private int test;
+
+    private int maxActionPoionts = 22;
+    private int currActionPoints;
+
+    private Mycelium isSelecting; // Can't select multiple Mycelium at once!
+
     // ~ Properties ~
 
     // Encapsulation -- For other classes to access our unique instance, we are creating a public property with just a get option (get or set member variables of class)
@@ -47,6 +54,15 @@ public class GameManager : MonoBehaviour
         set {
             GridAmount = value;
             return;
+        }
+    }
+
+    public int ActionPoints {
+        get {
+            return currActionPoints;
+        }
+        set {
+            currActionPoints = value;
         }
     }
 
@@ -92,6 +108,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public Mycelium IsSelecting {
+        get {
+            return isSelecting;
+        }
+        set {
+            isSelecting = value;
+        }
+    }
+
+    public Dictionary<(int, int), GridNode> CoordsToGridNode {
+        get {
+            return _CoordstoGridNode;
+        }
+    }
+
 
     // ~ Methods ~
 
@@ -116,7 +147,11 @@ public class GameManager : MonoBehaviour
         _TwoDimensionalGridMap = new List<List<int>>();
         GridNode[] grids;
         grids = FindObjectsOfType<GridNode>();
+        isPlayerTurn = true; // always starts off as the player's turn
 
+        //Debug.Log(grids.Length);
+
+        currActionPoints = maxActionPoionts;
 
         Dictionary<int, List<int>> tempDict = new Dictionary<int,  List<int>>(); // temporary dictionary we will convert to list later
         
@@ -145,6 +180,22 @@ public class GameManager : MonoBehaviour
             _TwoDimensionalGridMap.Add(tempDict[row]); // add column list to row index
             _TwoDimensionalGridMap[row].Sort(); // sort the columns now
         }
+
+        // Declare dictionnaries
+        _HumanGroup = new Dictionary<int, Human>();
+        _MyceliumGroup = new Dictionary<int, Mycelium>();
+
+        // Spawn our first Mycelium and make sure to add to necessary groups
+
+        // THIS NEEDS TO BE CHANGED AND HANDLED MORE CLEANLY IN A FUNCTION OR SOMETHING -- DECIDE LATER
+        int referenceID;
+        GameObject temp;
+
+        // Spawn Human very closeby
+        (referenceID, temp) = SpawnManager.Instance.Spawn(1, 1, "Myc");
+        
+        (referenceID, temp) = SpawnManager.Instance.Spawn(2, 2, "Hum");
+
     }
 
     // Update is called once per frame
@@ -157,19 +208,13 @@ public class GameManager : MonoBehaviour
         // CHECK 2 -- Check to see if >75% of the grid map is covered (is occupied) -- Winner is whoever has higher count
 
         // CHECK 3 -- Check to see if all special biomes are controlled by either Mycelium or Human -- Winner is decided there
+
+
     }
 
-    void advanceTurn() {
-        // Perform selected actions based on whose turn it is
-        
-        // Mycelium actions
-        if (isPlayerTurn) {
-            // ...
-        } else { // Human actions
-            // ...
-        }
-        
-
+    public void advanceTurn() {
+        // Change the turn and set to opposing action points
+        isPlayerTurn =! isPlayerTurn;
 
         /*
         Have this occur in a coroutine
@@ -179,7 +224,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void addMycelium(ref Mycelium newMycelium) {
-        _MyceliumGroup[newMycelium.GetInstanceID()] = newMycelium;
+        _MyceliumGroup[newMycelium.gameObject.GetInstanceID()] = newMycelium;
         _MyceliumCount++;
         return;
     }
@@ -191,7 +236,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void addHuman(ref Human newHuman) {
-        _HumanGroup[newHuman.GetInstanceID()] = newHuman;
+        _HumanGroup[newHuman.gameObject.GetInstanceID()] = newHuman;
         _HumanCount++;
         return;
     }
