@@ -13,15 +13,12 @@ public class Mycelium : MonoBehaviour
     private int maxHealth = 10;
     private int currHealth;
 
-    private int maxActionPoionts = 20;
-    private int currActionPoints;
-
     private Highlight mycHighlight;
     private bool highlighting;
     private bool selected;
 
-    private List<GridNode> unoccupiedGrids; // Grids to conquer
-    private List<GridNode> occupiedGrids; // Grids containing people to attack
+    public List<GridNode> unoccupiedGrids; // Grids to conquer
+    public List<GridNode> occupiedGrids; // Grids containing people to attack
 
     private int totalRange = 1;
 
@@ -76,7 +73,6 @@ public class Mycelium : MonoBehaviour
         row = (int)transform.localPosition.x;
         col = (int)transform.localPosition.z;
         currHealth = maxHealth;
-        currActionPoints = maxActionPoionts;
 
         highlighting = false;
         selected = false;
@@ -96,10 +92,66 @@ public class Mycelium : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(actionReady) {
-            Debug.Log("GIVE ME INPUT!");
-            Debug.Log(gridSelect);
+
+        if (currHealth <= 0)
+            Destroy(gameObject);
+
+        // 1 action per Mycelium that needs to be put into a queue in the gameManager and 
+        // then executed when the turn is manually ended by the player
+        if(actionReady && GameManager.Instance.ActionPoints > 0) {
+            if(Input.GetKeyDown(KeyCode.A) && (GameManager.Instance.ActionPoints - 2) >= 0) {
+                // Grow Action method here -- NEEDS TO BE AN UNOCCUPIED GRID
+                Debug.Log("Growing");
+                Grow();
+                // Action point spent here
+                GameManager.Instance.ActionPoints -= 2;
+                Reset();
+            } else if(Input.GetKeyDown(KeyCode.S) && (GameManager.Instance.ActionPoints - 10) >= 0) {
+                // Basic Attack Action method here -- NEEDS TO BE AN OCCUPIED GRID
+
+                //Action point spent here
+                GameManager.Instance.ActionPoints -= 10;
+                Reset();
+            } else if(Input.GetKeyDown(KeyCode.D) && (GameManager.Instance.ActionPoints - 5) >= 0) {
+                // Reinforce Action method here
+
+                //Action point spent here
+                GameManager.Instance.ActionPoints -= 5;
+                Reset();
+            }
+
+
+
         }
+    }
+
+    void Grow() {
+        // SPAWN a mycelium on a selected grid
+        SpawnManager.Instance.Spawn(gridSelect.Coordinates[0], gridSelect.Coordinates[1], "Myc");
+    }
+
+    void Reset() {
+        actionReady = false;
+        gridSelect = null;
+        selected = false;
+        mycHighlight.ToggleHighlight(false);
+
+        // unhighlight the grid
+        foreach(GridNode grid in unoccupiedGrids) {
+            grid.GridHighlight.ToggleHighlightChoice(false, Color.green);
+            grid.Clickable = false;
+            grid.MyceliumSelect = null;
+        }
+
+        foreach(GridNode grid in occupiedGrids) {
+            grid.GridHighlight.ToggleHighlightChoice(false, Color.red);
+            grid.Clickable = false;
+            grid.MyceliumSelect = null;
+        }
+
+        // Re-initialize
+        unoccupiedGrids = new List<GridNode>();
+        occupiedGrids = new List<GridNode>();
     }
 
     // The following will toggle the mycelium highlight
@@ -136,7 +188,7 @@ public class Mycelium : MonoBehaviour
 
                     // Check to see if we are not out of bounds (don't want to run into an error)
                     if (!(GameManager.Instance.CoordsToGridNode.ContainsKey((row + i, col + j)))) {
-                        //Debug.Log("here");
+                        Debug.Log("here");
                         //Debug.Log("row: " + (row + i)  + " col: " + (col + j));
                         continue;
                     }

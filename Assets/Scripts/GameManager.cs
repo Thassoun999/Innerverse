@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
     
     private int test;
 
+    private int maxActionPoionts = 20;
+    private int currActionPoints;
+
     // ~ Properties ~
 
     // Encapsulation -- For other classes to access our unique instance, we are creating a public property with just a get option (get or set member variables of class)
@@ -49,6 +52,15 @@ public class GameManager : MonoBehaviour
         set {
             GridAmount = value;
             return;
+        }
+    }
+
+    public int ActionPoints {
+        get {
+            return currActionPoints;
+        }
+        set {
+            currActionPoints = value;
         }
     }
 
@@ -127,6 +139,7 @@ public class GameManager : MonoBehaviour
 
         //Debug.Log(grids.Length);
 
+        currActionPoints = maxActionPoionts;
 
         Dictionary<int, List<int>> tempDict = new Dictionary<int,  List<int>>(); // temporary dictionary we will convert to list later
         
@@ -168,14 +181,8 @@ public class GameManager : MonoBehaviour
 
         // Spawn Human very closeby
         (referenceID, temp) = SpawnManager.Instance.Spawn(1, 1, "Myc");
-        _MyceliumGroup[referenceID] = GetComponent(typeof(Mycelium)) as Mycelium;
-        _MyceliumCount++;
-        
         
         (referenceID, temp) = SpawnManager.Instance.Spawn(2, 2, "Hum");
-        _HumanGroup[referenceID] = GetComponent(typeof(Human)) as Human;
-        _HumanCount++;
-
 
     }
 

@@ -4,21 +4,26 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+
+    // ~ Instances and Variables ~
+    
     [SerializeField] private Camera cam;
     [SerializeField] private float mouseSensitivity = 0.05f;
     // last position taken on mouse button down's frame to match against new positions
     public Vector3 lastPosition;
-    public float lastSize;
     // designated bounds for the zoom function's min and max zooms
-    [SerializeField] private float minSize = 2f;
-    [SerializeField] private float maxSize = 7f;
+    [SerializeField] private float minSize = 1f;
+    [SerializeField] private float maxSize = 9f;
     // designated field bounds for the min/max of the x and y transform position
-    [SerializeField] private float minX = -6;
-    [SerializeField] private float maxX = 44;
-    [SerializeField] private float minY = -1;
-    [SerializeField] private float maxY = 22;
+    [SerializeField] private float minX = -20;
+    [SerializeField] private float maxX = 60;
+    [SerializeField] private float minY = -15;
+    [SerializeField] private float maxY = 32;
     // float by which zoomSpeed will increment the orthographicSize by
     private float zoomSpeed = 0.5f;
+
+
+    // ~ Methods ~
 
     // Start is called before the first frame update
     void Start()
@@ -70,7 +75,7 @@ public class CameraController : MonoBehaviour
                 return;
             else
             {
-                transform.Translate(-delta.x * mouseSensitivity, -delta.y * mouseSensitivity, 0);
+                transform.Translate(-delta.x * mouseSensitivity * 0.5f, -delta.y * mouseSensitivity, -delta.x * mouseSensitivity * 0.5f);
                 lastPosition = Input.mousePosition;
             }
         }

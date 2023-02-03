@@ -10,11 +10,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject _MycSpawn;
     [SerializeField] GameObject _HumSpawn;
 
-    private Dictionary<int, GameObject> _MycGameObjDict;
-    private Dictionary<int, GameObject> _HumGameObjDict;
-
-    private List<GameObject> kust;
-
 
     // ~ Properties ~
     public static SpawnManager Instance
@@ -42,12 +37,6 @@ public class SpawnManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start()
-    {
-        _MycGameObjDict = new Dictionary<int, GameObject>();
-        _HumGameObjDict = new Dictionary<int, GameObject>();
-    }
-
     public (int, GameObject) Spawn(int row, int col, string spawnSpecification) {
         float rowFloat = (float)row;
         float colFloat = (float)col;
@@ -59,14 +48,18 @@ public class SpawnManager : MonoBehaviour
         if (spawnSpecification == "Myc"){
             temp = GameObject.Instantiate(_MycSpawn, position, transform.rotation);
             instanceID = temp.GetInstanceID();
-            _MycGameObjDict.Add(instanceID, temp);
+
+            Mycelium tempMyc = temp.GetComponent(typeof(Mycelium)) as Mycelium;
+            GameManager.Instance.addMycelium(ref tempMyc);
         
             return (instanceID, temp);
         }
         else if (spawnSpecification == "Hum"){
             temp = GameObject.Instantiate(_HumSpawn, position, transform.rotation);
             instanceID = temp.GetInstanceID();
-            _HumGameObjDict.Add(instanceID, temp);
+            
+            Human tempHum = temp.GetComponent(typeof(Human)) as Human;
+            GameManager.Instance.addHuman(ref tempHum);
 
             return (instanceID, temp);
         } else {    
@@ -74,17 +67,6 @@ public class SpawnManager : MonoBehaviour
             return (-1, null);
         }
 
-    }
-
-    public void DeSpawn(int instanceId, string despawnSpecification) {
-
-        if (despawnSpecification == "Myc") {
-            GameObject.Destroy(_MycGameObjDict[instanceId], 0.05f);
-            _MycGameObjDict.Remove(instanceId);
-        } else {
-            GameObject.Destroy(_HumGameObjDict[instanceId], 0.05f);
-            _HumGameObjDict.Remove(instanceId);
-        }
     }
     
 }
