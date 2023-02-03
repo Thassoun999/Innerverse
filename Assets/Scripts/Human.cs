@@ -39,11 +39,14 @@ public class Human : MonoBehaviour
 
     // Start is called before the first frame update (script is enabled)
     void Start()
-    {
+    { 
         // On awake, get your coordinate system! Possibly through the game manager
         // Also get the coordinate system of your "available" neighbors -- on update check if this changes for yourself
         row = (int)transform.localPosition.x;
         col = (int)transform.localPosition.z;
+
+        // Set grid we are standing on to occupied
+        GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 2; // set to Human
 
         currHealth = maxHealth;
     }

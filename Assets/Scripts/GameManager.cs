@@ -94,6 +94,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public Dictionary<(int, int), GridNode> CoordsToGridNode {
+        get {
+            return _CoordstoGridNode;
+        }
+    }
+
 
     // ~ Methods ~
 
@@ -118,6 +124,8 @@ public class GameManager : MonoBehaviour
         _TwoDimensionalGridMap = new List<List<int>>();
         GridNode[] grids;
         grids = FindObjectsOfType<GridNode>();
+
+        //Debug.Log(grids.Length);
 
 
         Dictionary<int, List<int>> tempDict = new Dictionary<int,  List<int>>(); // temporary dictionary we will convert to list later
@@ -153,12 +161,22 @@ public class GameManager : MonoBehaviour
         _MyceliumGroup = new Dictionary<int, Mycelium>();
 
         // Spawn our first Mycelium and make sure to add to necessary groups
+
+        // THIS NEEDS TO BE CHANGED AND HANDLED MORE CLEANLY IN A FUNCTION OR SOMETHING -- DECIDE LATER
         int referenceID;
         GameObject temp;
 
+        // Spawn Human very closeby
         (referenceID, temp) = SpawnManager.Instance.Spawn(1, 1, "Myc");
         _MyceliumGroup[referenceID] = GetComponent(typeof(Mycelium)) as Mycelium;
         _MyceliumCount++;
+        
+        
+        (referenceID, temp) = SpawnManager.Instance.Spawn(2, 2, "Hum");
+        _HumanGroup[referenceID] = GetComponent(typeof(Human)) as Human;
+        _HumanCount++;
+
+
     }
 
     // Update is called once per frame

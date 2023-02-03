@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4654866778944475002}
   - component: {fileID: 4654866778944474997}
   - component: {fileID: 7473002285306637133}
+  - component: {fileID: 3204398539075968757}
   m_Layer: 0
   m_Name: Myc (Player)
   m_TagString: Untagged
@@ -810,3 +811,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e617448c3a25845bf516f894afb8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3204398539075968757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4654866778944474996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0058d22dd8384cb4483614b8fd785b45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  renderers:
+  - {fileID: 4654866778944475003}
+  color: {r: 0.89533997, g: 0, b: 1, a: 0.16862746}
