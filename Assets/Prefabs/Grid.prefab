@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1566083938495988931}
   - component: {fileID: 1566083938495988935}
   - component: {fileID: 3497034786857689248}
+  - component: {fileID: 3263345819847735783}
   m_Layer: 0
   m_Name: Grid
   m_TagString: PlayArea
@@ -327,6 +328,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f614d0553d50b4da0d02d534035b70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  row: 0
+  col: 0
+  occupation: 0
+  selected: 0
+  clickable: 0
 --- !u!114 &3497034786857689248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,3 +348,23 @@ MonoBehaviour:
   renderers:
   - {fileID: 1566083938495988929}
   color: {r: 0.89411765, g: 0, b: 1, a: 0.16862746}
+--- !u!95 &3263345819847735783
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566083938495988797}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0c75d6f8ef87eea49b257a8b4b44271a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0

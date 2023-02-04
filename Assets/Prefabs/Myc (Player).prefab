@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4654866778944474997}
   - component: {fileID: 7473002285306637133}
   - component: {fileID: 3204398539075968757}
+  - component: {fileID: -2932024550961227570}
   m_Layer: 0
   m_Name: Myc (Player)
   m_TagString: Untagged
@@ -811,6 +812,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e617448c3a25845bf516f894afb8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currHealth: 0
+  unoccupiedGrids: []
+  occupiedGrids: []
 --- !u!114 &3204398539075968757
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -826,3 +830,23 @@ MonoBehaviour:
   renderers:
   - {fileID: 4654866778944475003}
   color: {r: 0.89533997, g: 0, b: 1, a: 0.16862746}
+--- !u!95 &-2932024550961227570
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4654866778944474996}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: db309886d7938344b95ab8f4a1688549, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0

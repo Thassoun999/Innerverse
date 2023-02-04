@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8299352041453866819}
   - component: {fileID: 229560701711296129}
   - component: {fileID: 8078236697319141998}
+  - component: {fileID: -2111363225701894147}
   m_Layer: 0
   m_Name: Human (Enemy)
   m_TagString: Untagged
@@ -827,3 +828,23 @@ MonoBehaviour:
   renderers:
   - {fileID: 8299352041453866817}
   color: {r: 1, g: 1, b: 1, a: 1}
+--- !u!95 &-2111363225701894147
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299352041453866844}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: eccd61f1408b5c64d8df8f17f4f13dff, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
