@@ -9,6 +9,7 @@ public class SpawnManager : MonoBehaviour
     private static SpawnManager _instance;
     [SerializeField] GameObject _MycSpawn;
     [SerializeField] GameObject _HumSpawn;
+    [SerializeField] GameObject _Settlement;
 
 
     // ~ Properties ~
@@ -37,34 +38,34 @@ public class SpawnManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public (int, GameObject) Spawn(int row, int col, string spawnSpecification) {
+    public void Spawn(int row, int col, string spawnSpecification) {
         float rowFloat = (float)row;
         float colFloat = (float)col;
         Vector3 position = new Vector3(rowFloat, 1.0f, colFloat);
         GameObject temp;
-        int instanceID;
 
         // Spawning
         if (spawnSpecification == "Myc"){
             temp = GameObject.Instantiate(_MycSpawn, position, transform.rotation);
-            instanceID = temp.GetInstanceID();
 
             Mycelium tempMyc = temp.GetComponent(typeof(Mycelium)) as Mycelium;
             GameManager.Instance.addMycelium(ref tempMyc);
-        
-            return (instanceID, temp);
+    
         }
         else if (spawnSpecification == "Hum"){
             temp = GameObject.Instantiate(_HumSpawn, position, transform.rotation);
-            instanceID = temp.GetInstanceID();
             
             Human tempHum = temp.GetComponent(typeof(Human)) as Human;
             GameManager.Instance.addHuman(ref tempHum);
 
-            return (instanceID, temp);
-        } else {    
+        } else if (spawnSpecification == "Settlement") {
+            temp = GameObject.Instantiate(_Settlement, position, transform.rotation);
+            
+            Settlement tempSet = temp.GetComponent(typeof(Settlement)) as Settlement;
+            GameManager.Instance.addSettlement(ref tempSet);
+        }
+        else {    
             Debug.LogError("Spawn Error: Improper spawn specification type");
-            return (-1, null);
         }
 
     }

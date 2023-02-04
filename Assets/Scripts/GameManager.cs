@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     // Static members can also be accessed directly from a class without instantiating an object of the class first.
     private static GameManager _instance;
     private bool isPlayerTurn;
-    private List<string> actions; // Based on Action Points and selections, add actions to list to execute
     private List<List<int>> _TwoDimensionalGridMap; // a 2D representation of isometric map on 2D list.
     private Dictionary<(int, int), GridNode> _CoordstoGridNode;
 
@@ -21,13 +20,18 @@ public class GameManager : MonoBehaviour
     public int _HumanCount; //  Comparing this with the grid count and human count helps to know if mycelium wins
     public Dictionary<int, Mycelium> _MyceliumGroup; // instanceId to ref game object
     public int _MyceliumCount; // Comparing this with the grid count and human count helps to know if mycelium wins
+    public Dictionary<int, Settlement> _SettlementGroup;
+    public int _SettlementCount;
     
-    private int test;
-
     private int maxActionPoionts = 22;
     private int currActionPoints;
 
     private Mycelium isSelecting; // Can't select multiple Mycelium at once!
+
+    private int _HumanCountBiome1;
+    private int _HumanCountBiome2;
+    private int _MyceliumCountBiome1;
+    private int _MyceliumCountBiome2;
 
     // ~ Properties ~
 
@@ -46,14 +50,57 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int GridAmount
-    {
+    public Dictionary<int, Mycelium> MyceliumGroup {
         get {
-            return GridAmount;
+            return _MyceliumGroup;
+        }
+    }
+
+    public Dictionary<int, Human> HumanGroup {
+        get {
+            return _HumanGroup;
+        }
+    }
+
+    public Dictionary<int, Settlement> SettlementGroup {
+        get {
+            return _SettlementGroup;
+        }
+    }
+
+    public int HumanCountBiome1 {
+        get {
+            return _HumanCountBiome1;
         }
         set {
-            GridAmount = value;
-            return;
+            _HumanCountBiome1 = value;
+        }
+    }
+
+    public int HumanCountBiome2 {
+        get {
+            return _HumanCountBiome2;
+        }
+        set {
+            _HumanCountBiome2 = value;
+        }
+    }
+
+    public int MyceliumCountBiome1 {
+        get {
+            return _MyceliumCountBiome1;
+        }
+        set {
+            _MyceliumCountBiome1 = value;
+        }
+    }
+
+    public int MyceliumCountBiome2 {
+        get {
+            return _MyceliumCountBiome2;
+        }
+        set {
+            _MyceliumCountBiome2 = value;
         }
     }
 
@@ -77,17 +124,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public List<string> Actions 
-    {
-        get {
-            return actions;
-        }
-        set {
-            actions = value;
-            return;
-        }
-    }
-
     public int MyceliumCount {
         get {
             return _MyceliumCount;
@@ -105,6 +141,16 @@ public class GameManager : MonoBehaviour
 
         set {
             _HumanCount = value;
+        }
+    }
+
+    public int SettlementCount {
+        get {
+            return _SettlementCount;
+        }
+        
+        set {
+            _SettlementCount = value;
         }
     }
 
@@ -146,11 +192,10 @@ public class GameManager : MonoBehaviour
         _CoordstoGridNode = new Dictionary<(int, int), GridNode>();
         _TwoDimensionalGridMap = new List<List<int>>();
         GridNode[] grids;
+
         grids = FindObjectsOfType<GridNode>();
+
         isPlayerTurn = true; // always starts off as the player's turn
-
-        //Debug.Log(grids.Length);
-
         currActionPoints = maxActionPoionts;
 
         Dictionary<int, List<int>> tempDict = new Dictionary<int,  List<int>>(); // temporary dictionary we will convert to list later
@@ -188,13 +233,12 @@ public class GameManager : MonoBehaviour
         // Spawn our first Mycelium and make sure to add to necessary groups
 
         // THIS NEEDS TO BE CHANGED AND HANDLED MORE CLEANLY IN A FUNCTION OR SOMETHING -- DECIDE LATER
-        int referenceID;
-        GameObject temp;
+        // May not need this
 
         // Spawn Human very closeby
-        (referenceID, temp) = SpawnManager.Instance.Spawn(1, 1, "Myc");
+        SpawnManager.Instance.Spawn(1, 1, "Myc");
         
-        (referenceID, temp) = SpawnManager.Instance.Spawn(2, 2, "Hum");
+        SpawnManager.Instance.Spawn(2, 2, "Hum");
 
     }
 
@@ -216,11 +260,42 @@ public class GameManager : MonoBehaviour
         // Change the turn and set to opposing action points
         isPlayerTurn =! isPlayerTurn;
 
+        // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
+        countInSpecialBiome();
+
         /*
         Have this occur in a coroutine
         isPlayerTurn = !isPlayerTurn; // switch our boolean
         actions.Clear(); // empty our actions list for the next turn group
         */
+    }
+
+    public void countInSpecialBiome() {
+        int tempHumanBiome1Count = 0;
+        int tempHumanBiome2Count = 0;
+        int tempMycBiome1Count = 0;
+        int tempMycBiome2Count = 0;
+
+        foreach (KeyValuePair<(int, int), GridNode> elem in _CoordstoGridNode){
+            if (elem.Value.SpecialClassifier == 1 && elem.Value.Standing != null){
+                if(elem.Value.Standing.GetComponent<Human>() != null) {
+                    tempHumanBiome1Count++;
+                } else if(elem.Value.Standing.GetComponent<Mycelium>() != null) {
+                    tempMycBiome1Count++;
+                }
+            } else if (elem.Value.SpecialClassifier == 2 && elem.Value.Standing != null) {
+                if(elem.Value.Standing.GetComponent<Human>() != null) {
+                    tempHumanBiome2Count++;
+                } else if(elem.Value.Standing.GetComponent<Mycelium>() != null) {
+                    tempMycBiome2Count++;
+                }
+            }
+        }
+
+        _HumanCountBiome1 = tempHumanBiome1Count;
+        _HumanCountBiome2 = tempHumanBiome2Count;
+        _MyceliumCountBiome1 = tempMycBiome1Count;
+        _MyceliumCountBiome2 = tempMycBiome2Count;
     }
 
     public void addMycelium(ref Mycelium newMycelium) {
@@ -244,6 +319,18 @@ public class GameManager : MonoBehaviour
     public void removeHuman(int instanceId) {
         _HumanGroup.Remove(instanceId);
         _HumanCount--;
+        return;
+    }
+
+    public void addSettlement(ref Settlement newSettlement) {
+        _SettlementGroup[newSettlement.gameObject.GetInstanceID()] = newSettlement;
+        _SettlementCount++;
+        return;
+    }
+
+    public void removeSettlement(int instanceId) {
+        _SettlementGroup.Remove(instanceId);
+        _SettlementCount--;
         return;
     }
 }

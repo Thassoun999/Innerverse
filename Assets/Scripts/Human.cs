@@ -17,6 +17,10 @@ public class Human : MonoBehaviour
     private bool clickable;
     private bool selected;
 
+    private int totalRange = 4;
+
+    private static int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
+
     // ~ Properties ~
     public int[] Coordinates{
         get {
@@ -31,6 +35,15 @@ public class Human : MonoBehaviour
             row = value[0];
             col = value[1];
             return;
+        }
+    }
+
+    public static int[] SettlemntBuilt{
+        get {
+            return settlementBuilt;
+        }
+        set {
+            settlementBuilt = value;
         }
     }
 
@@ -74,6 +87,7 @@ public class Human : MonoBehaviour
     }
 
     // Update is called once per frame
+
     void Update()
     {
         if (currHealth <= 0)
@@ -84,6 +98,14 @@ public class Human : MonoBehaviour
         }
     }
 
+    // Simply for taking a step closer to whatever destination is chosen
+
+    /*
+    public Move(int[] source, int[] destination) {
+
+    }
+
+    */
     public void Damage() {
         Debug.Log("Human hit!!!");
         currHealth -= 5;

@@ -52,6 +52,9 @@ public class Mycelium : MonoBehaviour
     }
 
     public GridNode GridSelect {
+        get {
+            return gridSelect;
+        }
         set {
             gridSelect = value;
         }
@@ -94,6 +97,10 @@ public class Mycelium : MonoBehaviour
     }
 
     // Update is called once per frame
+
+    // Self destruct special action + Thorns passive special action needs to be implemented
+
+    // NOTE: Mycelium only get special actions if at least ONE is on there
     void Update()
     {
 
@@ -104,7 +111,7 @@ public class Mycelium : MonoBehaviour
 
             // First check that we're not already poor
             if(GameManager.Instance.ActionPoints > 0){
-                // actionReady only called when this Mycelium is selected AND grid is selected
+                // actionReady only assigned true when this Mycelium is selected AND grid is selected
                 if(actionReady && GameManager.Instance.ActionPoints > 0) {
                     if(Input.GetKeyDown(KeyCode.A) && (GameManager.Instance.ActionPoints - 2) >= 0 && gridSelect.Occupation == 0) {
                         // Grow Action method here -- NEEDS TO BE AN UNOCCUPIED GRID
@@ -141,6 +148,13 @@ public class Mycelium : MonoBehaviour
     void Grow() {
         // SPAWN a mycelium on a selected grid
         SpawnManager.Instance.Spawn(gridSelect.Coordinates[0], gridSelect.Coordinates[1], "Myc");
+        
+        // We need this to update in realtime to know if we have our abilities or not
+        if(gridSelect.SpecialClassifier == 1) {
+            GameManager.Instance.MyceliumCountBiome1++;
+        } else if(gridSelect.SpecialClassifier == 2) {
+            GameManager.Instance.MyceliumCountBiome2++;
+        }
     }
 
     void Attack() {
