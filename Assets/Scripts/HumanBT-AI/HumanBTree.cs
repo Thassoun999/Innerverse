@@ -12,6 +12,12 @@ public class HumanBTree : BTree
                 new CanBuild(),
                 new Build(),
             }),
+            new Sequence(new List<Node> {
+                new ScanSurroundings(),
+                new Selector(new List<Node> {
+                    
+                })
+            })
 
             
         });

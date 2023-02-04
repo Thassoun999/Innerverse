@@ -38,6 +38,12 @@ public class Human : MonoBehaviour
         }
     }
 
+    public int TotalRange {
+        get {
+            return totalRange;
+        }
+    }
+
     public static int[] SettlemntBuilt{
         get {
             return settlementBuilt;
