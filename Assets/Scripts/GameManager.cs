@@ -251,8 +251,8 @@ public class GameManager : MonoBehaviour
         // May not need this
 
         // Spawn Human very closeby
-        //SpawnManager.Instance.Spawn(5, 4, "Myc");
-        SpawnManager.Instance.Spawn(26, 26, "Myc");
+        SpawnManager.Instance.Spawn(5, 4, "Myc");
+        //SpawnManager.Instance.Spawn(26, 26, "Myc");
         SpawnManager.Instance.Spawn(22, 24, "Hum");
         SpawnManager.Instance.Spawn(25, 26, "Settlement");
     }
@@ -268,7 +268,7 @@ public class GameManager : MonoBehaviour
         } else if(_HumanCount == 0) {
             Debug.Log("Mycelium Wins!!!!!");
         }
-        
+
         // CHECK 2 -- Check to see if >75% of the grid map is covered (is occupied) -- Winner is whoever has higher count
         float ratio = (float)(_MyceliumCount + _HumanCount) / (float)(CoordsToGridNode.Count);
         if(ratio >= 0.75) {
@@ -287,6 +287,9 @@ public class GameManager : MonoBehaviour
     }
 
     public void advanceTurn() {
+
+        Debug.Log("Turn Switch");
+
         // Change the turn and set to opposing action points
         isPlayerTurn =! isPlayerTurn;
 

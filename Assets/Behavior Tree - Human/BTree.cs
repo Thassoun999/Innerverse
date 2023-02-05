@@ -17,7 +17,9 @@ namespace BehaviorTree
         void Update()
         {
             if (_root != null && !GameManager.Instance.PlayerTurn)
+            {
                 _root.Evaluate();
+            }
         }
 
         // Inherited children NEED to override and define this

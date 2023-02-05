@@ -45,7 +45,7 @@ public class ScanSurroundings : Node
             return NodeState.SUCCESS;
         }
 
-        parent.parent.SetData("Scan Ratio", -1); // no guys around
+        parent.parent.SetData("Scan Ratio", -1.0f); // no guys around
         return NodeState.SUCCESS;
 
 

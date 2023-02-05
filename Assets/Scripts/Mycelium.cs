@@ -136,12 +136,12 @@ public class Mycelium : MonoBehaviour
                     }
                 }
             }
-        }
 
-
-        // End turn action
-        if(Input.GetKeyDown(KeyCode.KeypadEnter)) {
-            GameManager.Instance.advanceTurn();
+            // End turn action
+            if(Input.GetKeyDown(KeyCode.Return)) {
+                Debug.Log("my turn ended");
+                GameManager.Instance.advanceTurn();
+            }
         }
     }
 

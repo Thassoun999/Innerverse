@@ -78,7 +78,8 @@ public class Settlement : MonoBehaviour
 
     public void SpawnHuman() {
 
-        float randVal = Random.Range(0, 1);
+        Debug.Log("here I am");
+        float randVal = Random.Range(0.0f, 1.0f);
 
         // If this works then the random chance worked!!! Spawn a human!
         if(randVal <= GameManager.Instance.SettlementSpawnChance) {
@@ -91,6 +92,7 @@ public class Settlement : MonoBehaviour
                         continue;
 
                     if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 0) {
+                        Debug.Log("there I am");
                         SpawnManager.Instance.Spawn(row + i, col + j, "Hum");
                         if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].SpecialClassifier == 1)
                             GameManager.Instance.HumanCountBiome1++;
