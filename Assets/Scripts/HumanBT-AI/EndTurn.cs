@@ -14,6 +14,12 @@ public class EndTurn : Node
         // End your turn here!
         GameManager.Instance.PlayerTurn = true;
 
+        // Clearing all the data
+        ClearData("Scan Ratio");
+        ClearData("Mycelium Dict");
+        ClearData("Biome");
+        ClearData("BuildCoords");
+
         return NodeState.SUCCESS;
     }
 }

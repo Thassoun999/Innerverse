@@ -33,8 +33,10 @@ public class GameManager : MonoBehaviour
     private int _MyceliumCountBiome1;
     private int _MyceliumCountBiome2;
 
-    // (29; 0)
-    // (0; 29)
+    // (29; 0) Special Biome 2
+    // (0; 29) Special Biome 1
+
+    private float _settlementSpawnChance = 0.1f;
 
     // ~ Properties ~
 
@@ -124,6 +126,15 @@ public class GameManager : MonoBehaviour
         set {
             isPlayerTurn = value;
             return;
+        }
+    }
+
+    public float SettlementSpawnChance {
+        get {
+            return _settlementSpawnChance;
+        }
+        set {
+            _settlementSpawnChance = value;
         }
     }
 
@@ -232,6 +243,7 @@ public class GameManager : MonoBehaviour
         // Declare dictionnaries
         _HumanGroup = new Dictionary<int, Human>();
         _MyceliumGroup = new Dictionary<int, Mycelium>();
+        _SettlementGroup = new Dictionary<int, Settlement>();
 
         // Spawn our first Mycelium and make sure to add to necessary groups
 
@@ -239,10 +251,10 @@ public class GameManager : MonoBehaviour
         // May not need this
 
         // Spawn Human very closeby
-        SpawnManager.Instance.Spawn(1, 1, "Myc");
-        
-        SpawnManager.Instance.Spawn(2, 2, "Hum");
-
+        //SpawnManager.Instance.Spawn(5, 4, "Myc");
+        SpawnManager.Instance.Spawn(26, 26, "Myc");
+        SpawnManager.Instance.Spawn(22, 24, "Hum");
+        SpawnManager.Instance.Spawn(25, 26, "Settlement");
     }
 
     // Update is called once per frame
@@ -251,11 +263,26 @@ public class GameManager : MonoBehaviour
         // WIN-LOSE Conditions!
 
         // CHECK 1 -- Check to see if one side has a count of 0, the other side wins
-
+        if(_MyceliumCount == 0) {
+            Debug.Log("Humans Win!!!");
+        } else if(_HumanCount == 0) {
+            Debug.Log("Mycelium Wins!!!!!");
+        }
+        
         // CHECK 2 -- Check to see if >75% of the grid map is covered (is occupied) -- Winner is whoever has higher count
+        float ratio = (float)(_MyceliumCount + _HumanCount) / (float)(CoordsToGridNode.Count);
+        if(ratio >= 0.75) {
+            if(_MyceliumCount > _HumanCount) {
+                Debug.Log("Mycelium Wins!!!!!");
+            } else if(_HumanCount > _MyceliumCount) {
+                Debug.Log("Humans Win!!!");
+            }
+        }
 
-        // CHECK 3 -- Check to see if all special biomes are controlled by either Mycelium or Human -- Winner is decided there
-
+        // CHECK 3 -- Check to see if all settlements have been destroyed, if this is done then the Mycelium win
+        if(_SettlementCount == 0) {
+            Debug.Log("Mycelium Wins!!!!!");
+        }
 
     }
 
@@ -266,11 +293,13 @@ public class GameManager : MonoBehaviour
         // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
         countInSpecialBiome();
 
-        /*
-        Have this occur in a coroutine
-        isPlayerTurn = !isPlayerTurn; // switch our boolean
-        actions.Clear(); // empty our actions list for the next turn group
-        */
+        // Every Settlement attempts to spawn a human!
+        foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
+            elem.Value.SpawnHuman();
+        }
+
+        _settlementSpawnChance += 0.45f; // Increase chance of settlement spawning human per turn
+        // If Settlement spawns a human, reset the chance back to 10%
     }
 
     public void countInSpecialBiome() {

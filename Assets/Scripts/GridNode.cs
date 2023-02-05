@@ -9,7 +9,7 @@ public class GridNode : MonoBehaviour {
     // change variables to private later
     public int row;
     public int col;
-    public int occupation = 0; // 0 for None, 1 for Mycelium, 2 for Human
+    public int occupation = 0; // 0 for None, 1 for Mycelium, 2 for Human, 3 for Settlement
     private bool selected = false;
     private bool clickable = false;
 
@@ -51,8 +51,8 @@ public class GridNode : MonoBehaviour {
             return occupation;
         }
         set {
-            if (!(value == 0 || value == 1 || value == 2))
-                Debug.LogError("Occupation Error: Put in a correct value (0, 1, 2).");
+            if (!(value == 0 || value == 1 || value == 2 || value == 3))
+                Debug.LogError("Occupation Error: Put in a correct value (0, 1, 2, 3).");
             
             occupation = value;
         }
@@ -95,6 +95,14 @@ public class GridNode : MonoBehaviour {
             if (!selected) {
                 // From here we need to send the grid coordinates to Mycelium and allow it to pick an action!
                 // This is where we pull up the wheel!
+                if (myceliumSelect.GridSelect != null) {
+                    if(myceliumSelect.GridSelect.Occupation == 0) {
+                        myceliumSelect.GridSelect.GridHighlight.ToggleHighlightChoice(true, Color.green);
+                    } else if (myceliumSelect.GridSelect.Occupation == 2 || myceliumSelect.GridSelect.Occupation == 3) {
+                        myceliumSelect.GridSelect.GridHighlight.ToggleHighlightChoice(true, Color.red);
+                    }
+                }
+
                 myceliumSelect.GridSelect = this;
                 myceliumSelect.ActionReady = true;
                 selected = true;
@@ -108,7 +116,7 @@ public class GridNode : MonoBehaviour {
 
                 if (occupation == 0){
                     GridHighlight.ToggleHighlightChoice(true, Color.green);
-                } else if (occupation == 2){
+                } else if (occupation == 2 || occupation == 3){
                     GridHighlight.ToggleHighlightChoice(true, Color.red);
 
                 }
@@ -124,7 +132,7 @@ public class GridNode : MonoBehaviour {
                 if (myceliumSelect.GridSelect != null) {
                     if (myceliumSelect.GridSelect.Occupation == 0){
                         GridHighlight.ToggleHighlightChoice(true, Color.green);
-                    } else if (myceliumSelect.GridSelect.Occupation == 2){
+                    } else if (myceliumSelect.GridSelect.Occupation == 2 || myceliumSelect.GridSelect.Occupation == 3){
                         GridHighlight.ToggleHighlightChoice(true, Color.red);
 
                     }
@@ -145,7 +153,7 @@ public class GridNode : MonoBehaviour {
 
                 if (occupation == 0){
                     GridHighlight.ToggleHighlightChoice(true, Color.green);
-                } else if (occupation == 2){
+                } else if (occupation == 2 || occupation == 3){
                     GridHighlight.ToggleHighlightChoice(true, Color.red);
 
                 }

@@ -98,10 +98,6 @@ public class Human : MonoBehaviour
     {
         if (currHealth <= 0)
             Destroy(gameObject);
-
-        if(!GameManager.Instance.PlayerTurn) {
-            Debug.Log("Human Turn");
-        }
     }
 
     // Simply for taking a step closer to whatever destination is chosen

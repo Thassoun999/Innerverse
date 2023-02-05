@@ -120,7 +120,7 @@ public class Mycelium : MonoBehaviour
                         // Action point spent here
                         GameManager.Instance.ActionPoints -= 2;
                         Reset();
-                    } else if(Input.GetKeyDown(KeyCode.S) && (GameManager.Instance.ActionPoints - 10) >= 0 && gridSelect.Occupation == 2) {
+                    } else if(Input.GetKeyDown(KeyCode.S) && (GameManager.Instance.ActionPoints - 10) >= 0 && (gridSelect.Occupation == 2 || gridSelect.Occupation == 3)) {
                         // Basic Attack Action method here -- NEEDS TO BE AN OCCUPIED GRID
                         Attack();
                         //Action point spent here
@@ -248,7 +248,8 @@ public class Mycelium : MonoBehaviour
 
                         if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 0) { // if unoccupied
                             unoccupiedGrids.Add(GameManager.Instance.CoordsToGridNode[(row + i, col + j)]);
-                        } else if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 2) { // if human occupied
+                        } else if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 2 ||
+                            GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 3) { // if human occupied
                             occupiedGrids.Add(GameManager.Instance.CoordsToGridNode[(row + i, col + j)]);
                         }
                         
