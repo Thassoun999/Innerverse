@@ -8,6 +8,8 @@ public class Conquer : Node
 {
 
     // Only engage in conquering if you're outnumbered (equivalent of retreating)
+    // Also if there's already 5 on each special biome, no need to keep conquering, you can just wander
+    // Also no need to conquer if both settlements in the special biomes are built
     public override NodeState Evaluate()
     {
         if(GameManager.Instance.PlayerTurn)

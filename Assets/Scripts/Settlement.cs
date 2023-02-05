@@ -79,6 +79,8 @@ public class Settlement : MonoBehaviour
     public void SpawnHuman() {
 
         Debug.Log("here I am");
+
+        /*
         float randVal = Random.Range(0.0f, 1.0f);
 
         // If this works then the random chance worked!!! Spawn a human!
@@ -105,7 +107,7 @@ public class Settlement : MonoBehaviour
                     
                 }
             }
-        }
+        } */
     }
 
     public void Damage() {
