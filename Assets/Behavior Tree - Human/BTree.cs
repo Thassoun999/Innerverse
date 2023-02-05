@@ -16,7 +16,7 @@ namespace BehaviorTree
 
         void Update()
         {
-            if (_root != null)
+            if (_root != null && !GameManager.Instance.PlayerTurn)
                 _root.Evaluate();
         }
 

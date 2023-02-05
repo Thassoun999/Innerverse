@@ -13,6 +13,9 @@ public class Build : Node
 
     public override NodeState Evaluate()
     {
+        if(GameManager.Instance.PlayerTurn)
+            return NodeState.FAILURE;
+
         int[] buildCoords = GetData("BuildCoords") as int[];
         int biomeSpecification = (int)GetData("Biome");
 

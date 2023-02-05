@@ -33,6 +33,9 @@ public class GameManager : MonoBehaviour
     private int _MyceliumCountBiome1;
     private int _MyceliumCountBiome2;
 
+    // (29; 0)
+    // (0; 29)
+
     // ~ Properties ~
 
     // Encapsulation -- For other classes to access our unique instance, we are creating a public property with just a get option (get or set member variables of class)

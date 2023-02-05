@@ -8,6 +8,9 @@ public class ScanSurroundings : Node
 {
     public override NodeState Evaluate()
     {
+        if(GameManager.Instance.PlayerTurn)
+            return NodeState.FAILURE;
+
         Dictionary<int, Mycelium> tempMycRecord = new Dictionary<int, Mycelium>(); // keep track of all of our Mycelium we have already counted over
 
         // Look for Mycelium in range, get the total count per Mycelium (make sure we aren't double counting)
@@ -33,10 +36,16 @@ public class ScanSurroundings : Node
             }
         }
 
-        float _HumanToMyceliumRatio = (float)GameManager.Instance._HumanCount / (float)tempMycRecord.Count;
-
         parent.parent.SetData("Mycelium Dict", tempMycRecord);
-        parent.parent.SetData("Scan Ratio", _HumanToMyceliumRatio);
+
+        if(tempMycRecord.Count > 0) {
+            float _HumanToMyceliumRatio = (float)GameManager.Instance._HumanCount / (float)tempMycRecord.Count;
+
+            parent.parent.SetData("Scan Ratio", _HumanToMyceliumRatio);
+            return NodeState.SUCCESS;
+        }
+
+        parent.parent.SetData("Scan Ratio", -1); // no guys around
         return NodeState.SUCCESS;
 
 

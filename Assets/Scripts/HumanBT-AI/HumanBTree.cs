@@ -11,15 +11,17 @@ public class HumanBTree : BTree
             new Sequence(new List<Node> {
                 new CanBuild(),
                 new Build(),
+                new EndTurn(),
             }),
             new Sequence(new List<Node> {
                 new ScanSurroundings(),
                 new Selector(new List<Node> {
-                    
-                })
-            })
-
-            
+                    new Fight(),
+                    new Conquer(),
+                }),
+                new EndTurn()
+            }), 
+            new EndTurn()
         });
 
         return root;

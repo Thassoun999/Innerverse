@@ -12,6 +12,8 @@ public class CanBuild : Node
 
     public override NodeState Evaluate()
     {
+        if(GameManager.Instance.PlayerTurn)
+            return NodeState.FAILURE;
 
         object t = GetData("canBuild");
         if (t == null) {
@@ -20,7 +22,7 @@ public class CanBuild : Node
             if(GameManager.Instance.HumanCountBiome1 >= 5 && Human.SettlemntBuilt[1] == 0) {
                 // Check for the first available space to build our settlement!
                 foreach (KeyValuePair<(int, int), GridNode> elem in GameManager.Instance.CoordsToGridNode){
-                    if(elem.Value.Occupation == 0) {
+                    if(elem.Value.Occupation == 0 && elem.Value.SpecialClassifier == 1) {
                         temp[0] = elem.Key.Item1;
                         temp[1] = elem.Key.Item2;
 
@@ -34,7 +36,7 @@ public class CanBuild : Node
             if(GameManager.Instance.HumanCountBiome2 >= 5 && Human.SettlemntBuilt[2] == 0) {
             // Check for the first available space to build our settlement!
                 foreach (KeyValuePair<(int, int), GridNode> elem in GameManager.Instance.CoordsToGridNode){
-                    if(elem.Value.Occupation == 0) {
+                    if(elem.Value.Occupation == 0 && elem.Value.SpecialClassifier == 2) {
                         temp[0] = elem.Key.Item1;
                         temp[1] = elem.Key.Item2;
 
@@ -50,64 +52,3 @@ public class CanBuild : Node
         return NodeState.FAILURE;
     }
 }
-
-/*
-    public void Build(int row, int col) {
-        for(int i = -totalRange; i < totalRange + 1; i++) {
-            for(int j = -totalRange)
-        }
-    }
-
-    // Simply for taking a step closer to whatever destination is chosen
-    public Move(int[] source, int[] destination) {
-
-    }
-
-    public (bool, int, int[]) canBuild() {
-
-        int[] temp = new int[] {-1, -1};
-
-        // Check if count requirements are met
-        if(GameManager.Instance.HumanCountBiome1 >= 5 && settlementBuilt[1] == 0) {
-            // Check for the first available space to build our settlement!
-            foreach (KeyValuePair<(int, int), GridNode> elem in GameManager.Instance.CoordsToGridNode){
-                if(elem.Value.Occupation == 0) {
-                    temp[0] = elem.Key.Item1;
-                    temp[1] = elem.Key.Item2;
-
-                    return(true, 1, temp);
-                }
-            }
-            return (false, 1, temp);
-        }
-
-        if(GameManager.Instance.HumanCountBiome2 >= 5 && settlementBuilt[2] == 0) {
-            // Check for the first available space to build our settlement!
-            foreach (KeyValuePair<(int, int), GridNode> elem in GameManager.Instance.CoordsToGridNode){
-                if(elem.Value.Occupation == 0) {
-                    temp[0] = elem.Key.Item1;
-                    temp[1] = elem.Key.Item2;
-
-                    return(true, 2, temp);
-                }
-            }
-            return (false, 2, temp);
-        }
-
-
-        return (false, -1, temp);
-    }
-
-    public void Build(int row, int col) {
-        for(int i = -totalRange; i < totalRange + 1; i++) {
-            for(int j = -totalRange)
-        }
-    }
-
-    // Simply for taking a step closer to whatever destination is chosen
-    public Move(int[] source, int[] destination) {
-
-    }
-
-
-*/
