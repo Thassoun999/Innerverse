@@ -65,7 +65,6 @@ public class Conquer : Node
                     continue;
 
                 // Move our soldier
-                Debug.Log("Biome 2 go!");
                 Move(path, ref tempHum);
 
             } else if (distanceToBiome1 < distanceToBiome2 && GameManager.SettlementBuilt[1] == 0) {
@@ -104,12 +103,9 @@ public class Conquer : Node
     void Move(List<GridNode> path, ref Human agentToMove) {
         // We need to start by ensuring the grid we are standing on no longer references us in any way
         agentToMove.SetPath(ref path);
-
-        Debug.Log("Move Done!");
         return;
     }
 
-    
     public class PathNode {
         public GridNode _Node;
         public int gCost;
@@ -128,8 +124,6 @@ public class Conquer : Node
                 return this.gCost + this.hCost;
             }
         }
-
-
     }
 
     // Returns full path, it's up to the constraints of the individual to just go the amount of steps they CAN go to
@@ -141,8 +135,7 @@ public class Conquer : Node
 
         PathNode startNode = new PathNode(GameManager.Instance.CoordsToGridNode[(coords[0], coords[1])]);
         PathNode destNode = new PathNode(destination);
-        //Debug.Log(startNode._Node.Coordinates[0] + " " + startNode._Node.Coordinates[1]);
-        //Debug.Log(destNode._Node.Coordinates[0] + " " + destNode._Node.Coordinates[1]);
+
         startNode.gCost = 0;
         startNode.hCost = (int)GetDistance(startNode, destNode);
         destNode.hCost = 0;
@@ -169,7 +162,6 @@ public class Conquer : Node
 
             foreach(PathNode neighbour in neighbours) {
                 if(neighbour._Node.Occupation != 0 || closedSet.Contains(neighbour)) {
-                    Debug.Log("die I'm here");
                     continue;
                 }
 
@@ -183,8 +175,6 @@ public class Conquer : Node
                     if(!openSet.Contains(neighbour))
                         openSet.Add(neighbour);
                 }
-
-
             }
         }
 

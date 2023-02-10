@@ -20,6 +20,8 @@ public class Fight : Node
             return NodeState.FAILURE;
         }
 
+        Debug.Log("Fight Time!");
+
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;
             int[] tempHumanCoords = tempHum.Coordinates;
@@ -29,13 +31,13 @@ public class Fight : Node
                     if (i == 0 && j == 0)
                         continue;
 
-                    if (!(GameManager.Instance.CoordsToGridNode.ContainsKey((tempHumanCoords[0], tempHumanCoords[1]))))
+                    if (!(GameManager.Instance.CoordsToGridNode.ContainsKey((tempHumanCoords[0] + i, tempHumanCoords[1] + j))))
                         continue;
 
                     // There's a Mycelium
-                    if (GameManager.Instance.CoordsToGridNode[(tempHumanCoords[0], tempHumanCoords[1])].Occupation == 1) {
+                    if (GameManager.Instance.CoordsToGridNode[(tempHumanCoords[0] + i, tempHumanCoords[1] + j)].Occupation == 1) {
                         // Need to find an empty cell near that Mycelium, if there isn't one then continue
-                        Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(tempHumanCoords[0], tempHumanCoords[1])].Standing.GetComponent(
+                        Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(tempHumanCoords[0] + i, tempHumanCoords[1] + j)].Standing.GetComponent(
                             typeof(Mycelium)) as Mycelium;
 
                         // Find destination node
@@ -46,7 +48,7 @@ public class Fight : Node
                                 if (x == 0 && y == 0)
                                     continue;
                                 
-                                if(!GameManager.Instance.CoordsToGridNode.ContainsKey((coords[0], coords[1])))
+                                if(!GameManager.Instance.CoordsToGridNode.ContainsKey((coords[0] + x, coords[1] + y)))
                                     continue;
 
                                 if(GameManager.Instance.CoordsToGridNode[(coords[0] + x, coords[1] + y)].Occupation == 0) {
@@ -68,11 +70,8 @@ public class Fight : Node
                         if(path == null)
                             continue;
 
-                        // Move our soldier!!!
-                        Move(path, ref tempHum);
-
-                        // ATTACK OUR MYCELIUM!!! (Since we are in range)
-                        tempMyc.Damage();
+                        // Move our soldier to attack!!
+                        Move(path, ref tempHum, coords);
                     }
                 }
             }
@@ -81,34 +80,10 @@ public class Fight : Node
         return NodeState.SUCCESS;
     }
 
-    void Move(List<GridNode> path, ref Human agentToMove) {
-        // We need to start by ensuring the grid we are standing on no longer references us in any way
-        int[] coords = agentToMove.Coordinates;
-
-        GameManager.Instance.CoordsToGridNode[(coords[0], coords[1])].Occupation = 0;
-        GameManager.Instance.CoordsToGridNode[(coords[0], coords[1])].Standing = null;
-
-        // Move from grid to grid
-        foreach(GridNode node in path) {
-            Vector3 targetPosition = new Vector3(node.gameObject.transform.localPosition.x, 0, node.gameObject.transform.localPosition.z);
-            Vector3 velocity = Vector3.zero;
-            agentToMove.gameObject.transform.localPosition = Vector3.SmoothDamp(
-                agentToMove.gameObject.transform.localPosition,
-                targetPosition,
-                ref velocity,
-                0.3f
-            );
-        }
-
-        // Once we are on last grid we need to update the grid we are standing on, our coords, everything
-        GridNode copyNode = path[path.Count - 1];
-        int[] copyNodeCoords = copyNode.Coordinates;
-
-        agentToMove.Coordinates = copyNodeCoords;
-
-        // We're doing this so we get the actual reference in case our copyNode is not an actual reference
-        GameManager.Instance.CoordsToGridNode[(copyNodeCoords[0], copyNodeCoords[1])].Occupation = 2;
-        GameManager.Instance.CoordsToGridNode[(copyNodeCoords[0], copyNodeCoords[1])].Standing = agentToMove.gameObject;
+    void Move(List<GridNode> path, ref Human agentToMove, int[] mycAttackCoords) {
+        
+        agentToMove.SetTarget(mycAttackCoords);
+        agentToMove.SetPath(ref path);
 
         return;
     }
@@ -131,8 +106,6 @@ public class Fight : Node
                 return this.gCost + this.hCost;
             }
         }
-
-
     }
 
     // Returns full path, it's up to the constraints of the individual to just go the amount of steps they CAN go to
@@ -146,6 +119,7 @@ public class Fight : Node
         PathNode destNode = new PathNode(destination);
         startNode.gCost = 0;
         startNode.hCost = (int)GetDistance(startNode, destNode);
+        destNode.hCost = 0;
         openSet.Add(startNode);
 
         while (openSet.Count > 0) {
@@ -160,6 +134,7 @@ public class Fight : Node
             closedSet.Add(curr);
 
             if(curr._Node.Coordinates[0] == destNode._Node.Coordinates[0] && curr._Node.Coordinates[1] == destNode._Node.Coordinates[1]) {
+                destNode.parent = curr.parent;
                 return RetracePath(startNode, destNode);
             }
 
@@ -180,8 +155,6 @@ public class Fight : Node
                     if(!openSet.Contains(neighbour))
                         openSet.Add(neighbour);
                 }
-
-
             }
         }
 
@@ -222,6 +195,9 @@ public class Fight : Node
     }
 
     float GetDistance(PathNode nodeA, PathNode nodeB) {
+        if(nodeA == null || nodeB == null)
+            return Mathf.Infinity;
+
         float dstX = Mathf.Pow((nodeB._Node.Coordinates[0] - nodeA._Node.Coordinates[0]), 2);
         float dstY = Mathf.Pow((nodeB._Node.Coordinates[1] - nodeA._Node.Coordinates[1]), 2);
 

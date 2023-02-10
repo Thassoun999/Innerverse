@@ -87,13 +87,7 @@ public class Settlement : MonoBehaviour
     }
 
     public void SpawnHuman() {
-
-        Debug.Log("here I am");
-
         float randVal = Random.Range(0.0f, 1.0f);
-
-        Debug.Log("Random Value: " + randVal);
-        Debug.Log("Spawn Chance: " + GameManager.Instance.SettlementSpawnChance);
 
         // If this works then the random chance worked!!! Spawn a human!
         if(randVal <= GameManager.Instance.SettlementSpawnChance) {
@@ -106,9 +100,7 @@ public class Settlement : MonoBehaviour
                         continue;
 
                     if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 0) {
-                        Debug.Log("there I am");
                         GameManager.Instance.SettlementSpawnChance = 0.1f;
-                        Debug.Log("New Spawn Chance: " + GameManager.Instance.SettlementSpawnChance);
                         SpawnManager.Instance.Spawn(row + i, col + j, "Hum");
 
                         return; // leave immediately after spawning a guy in

@@ -29,6 +29,10 @@ public class Human : MonoBehaviour
     private float recordedDistanceToNode;
     private Vector3 velocity;
 
+    // Attacking parameters
+    private int[] attackingCoords;
+    private bool attackTime;
+
     // ~ Properties ~
     public int[] Coordinates{
         get {
@@ -94,6 +98,7 @@ public class Human : MonoBehaviour
         currHealth = maxHealth;
         walking = false;
         moveActivated = false;
+        attackTime = false;
     }
 
     void OnDestroy()
@@ -157,6 +162,14 @@ public class Human : MonoBehaviour
                     (float)col
                 );
                 moveActivated = false;
+
+                // This isn't just a move, but also an attack! Damage our Mycelium!
+                if (attackTime) {
+                    Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].Standing.GetComponent(
+                        typeof(Mycelium)) as Mycelium;
+                    tempMyc.Damage();
+                    attackTime = false;
+                }
             }
         }
     }
@@ -189,14 +202,12 @@ public class Human : MonoBehaviour
 
     }
 
-    // Simply for taking a step closer to whatever destination is chosen
-
-    /*
-    public Move(int[] source, int[] destination) {
-
+    // Sets the target and enables attacking
+    public void SetTarget(int[] coords) {
+        attackTime = true;
+        attackingCoords = coords;
     }
 
-    */
     public void Damage() {
         Debug.Log("Human hit!!!");
         currHealth -= 5;

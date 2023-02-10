@@ -117,7 +117,6 @@ public class Mycelium : MonoBehaviour
                 if(actionReady && GameManager.Instance.ActionPoints > 0) {
                     if(Input.GetKeyDown(KeyCode.A) && (GameManager.Instance.ActionPoints - 2) >= 0 && gridSelect.Occupation == 0) {
                         // Grow Action method here -- NEEDS TO BE AN UNOCCUPIED GRID
-                        Debug.Log("Growing");
                         Grow();
                         // Action point spent here
                         GameManager.Instance.ActionPoints -= 2;
@@ -242,8 +241,6 @@ public class Mycelium : MonoBehaviour
 
                         // Check to see if we are not out of bounds (don't want to run into an error)
                         if (!(GameManager.Instance.CoordsToGridNode.ContainsKey((row + i, col + j)))) {
-                            Debug.Log("here");
-                            //Debug.Log("row: " + (row + i)  + " col: " + (col + j));
                             continue;
                         }
 
