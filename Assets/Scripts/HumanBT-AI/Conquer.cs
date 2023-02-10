@@ -8,11 +8,15 @@ public class Conquer : Node
 {
 
     // Only engage in conquering if you're outnumbered (equivalent of retreating)
-    // Also if there's already 5 on each special biome, no need to keep conquering, you can just wander
-    // Also no need to conquer if both settlements in the special biomes are built
+    // Also if there's already 5 on each special biome, no need to keep conquering, you can just wander (DONE)
+    // ALSO ENSURE THAT THE WALK RANGE IS AS IT IS!!!! HAVE THE FINAL DESTINATION BUT ONLY GO A CERTAIN NUM OF STEPS (DONE)
+    // Also no need to conquer if both settlements in the special biomes are built (CHECK)
     public override NodeState Evaluate()
     {
-        if(GameManager.Instance.PlayerTurn)
+        // Don't conquer if there's nothing to conquer (we don't care about the first settlement)
+        if(GameManager.Instance.PlayerTurn || (
+            GameManager.SettlementBuilt[1] == 1 
+            && GameManager.SettlementBuilt[2] == 1))
             return NodeState.FAILURE;
 
         float humanToMycRatio = (float)GetData("Scan Ratio");
@@ -25,6 +29,8 @@ public class Conquer : Node
         int[] specialBiome1EdgeCoords = new int[] {0, 29};
         int[] specialBiome2EdgeCoords = new int[] {29, 0};
 
+        Debug.Log("Conquer Time!");
+
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;
             int[] tempHumanCoords = tempHum.Coordinates;
@@ -34,7 +40,8 @@ public class Conquer : Node
             float distanceToBiome1 = GetDistance(tempHumanCoords, specialBiome1EdgeCoords);
             float distanceToBiome2 = GetDistance(tempHumanCoords, specialBiome2EdgeCoords);
 
-            if(distanceToBiome1 >= distanceToBiome2) {
+            // Don't just check for distance but also check if that settlement has already been conquered or not (TO WORK ON)
+            if(distanceToBiome1 >= distanceToBiome2 && GameManager.SettlementBuilt[2] == 0) {
                 // Go to Biome 2 (shorter distance)
                 float shortestDistance = 1000000.0f;
                 // Find a node that is unoccupied, of the biome type, and the closest to our Human
@@ -58,9 +65,10 @@ public class Conquer : Node
                     continue;
 
                 // Move our soldier
+                Debug.Log("Biome 2 go!");
                 Move(path, ref tempHum);
 
-            } else {
+            } else if (distanceToBiome1 < distanceToBiome2 && GameManager.SettlementBuilt[1] == 0) {
                 // Go to Biome 1 (shorter distance)
                 float shortestDistance = 1000000.0f;
                 // Find a node that is unoccupied, of the biome type, and the closest to our Human
@@ -84,6 +92,7 @@ public class Conquer : Node
                     continue;
 
                 // Move our soldier
+                Debug.Log("Biome 1 go!");
                 Move(path, ref tempHum);
             }
         }
@@ -94,33 +103,9 @@ public class Conquer : Node
 
     void Move(List<GridNode> path, ref Human agentToMove) {
         // We need to start by ensuring the grid we are standing on no longer references us in any way
-        int[] coords = agentToMove.Coordinates;
+        agentToMove.SetPath(ref path);
 
-        GameManager.Instance.CoordsToGridNode[(coords[0], coords[1])].Occupation = 0;
-        GameManager.Instance.CoordsToGridNode[(coords[0], coords[1])].Standing = null;
-
-        float walkCooldown = 2.0f;
-        float currWalkCooldown = 0.0f;
-
-        // Move from grid to grid
-        foreach(GridNode node in path) {
-            Vector3 targetPosition = new Vector3(node.gameObject.transform.localPosition.x, agentToMove.gameObject.transform.localPosition.y, node.gameObject.transform.localPosition.z);
-            agentToMove.gameObject.transform.localPosition = targetPosition;
-            while(currWalkCooldown < walkCooldown)
-                currWalkCooldown += Time.deltaTime;
-            currWalkCooldown = 0.0f;
-        }
-
-        // Once we are on last grid we need to update the grid we are standing on, our coords, everything
-        GridNode copyNode = path[path.Count - 1];
-        int[] copyNodeCoords = copyNode.Coordinates;
-
-        agentToMove.Coordinates = copyNodeCoords;
-
-        // We're doing this so we get the actual reference in case our copyNode is not an actual reference
-        GameManager.Instance.CoordsToGridNode[(copyNodeCoords[0], copyNodeCoords[1])].Occupation = 2;
-        GameManager.Instance.CoordsToGridNode[(copyNodeCoords[0], copyNodeCoords[1])].Standing = agentToMove.gameObject;
-
+        Debug.Log("Move Done!");
         return;
     }
 
@@ -175,6 +160,7 @@ public class Conquer : Node
             closedSet.Add(curr);
 
             if(curr._Node.Coordinates[0] == destNode._Node.Coordinates[0] && curr._Node.Coordinates[1] == destNode._Node.Coordinates[1]) {
+                destNode.parent = curr.parent; // parent on the destination node is currently unassigned!
                 return RetracePath(startNode, destNode);
             }
 
@@ -183,6 +169,7 @@ public class Conquer : Node
 
             foreach(PathNode neighbour in neighbours) {
                 if(neighbour._Node.Occupation != 0 || closedSet.Contains(neighbour)) {
+                    Debug.Log("die I'm here");
                     continue;
                 }
 
@@ -227,12 +214,11 @@ public class Conquer : Node
     List<GridNode> RetracePath(PathNode startNode, PathNode endNode) {
         List<GridNode> path = new List<GridNode>();
         PathNode currNode = endNode;
-        GridNode currGridNode = currNode._Node;
-        GridNode startGridNode = startNode._Node;
 
-        while (currNode != null && currGridNode != startGridNode) {
-            path.Add(currGridNode);
+        while (currNode != null && currNode._Node != startNode._Node) {
+            path.Add(currNode._Node);
             currNode = currNode.parent;
+            
         }
 
         path.Reverse();
@@ -240,6 +226,9 @@ public class Conquer : Node
     }
 
     float GetDistance(PathNode nodeA, PathNode nodeB) {
+        if(nodeA == null || nodeB == null)
+            return Mathf.Infinity;
+
         float dstX = Mathf.Pow((nodeB._Node.Coordinates[0] - nodeA._Node.Coordinates[0]), 2);
         float dstY = Mathf.Pow((nodeB._Node.Coordinates[1] - nodeA._Node.Coordinates[1]), 2);
 
@@ -247,6 +236,9 @@ public class Conquer : Node
     }
 
     float GetDistance(int[] coordsA, int[] coordsB) {
+        if(coordsA.Length == 0 || coordsA.Length > 2 || coordsB.Length == 0 || coordsB.Length > 2)
+            return Mathf.Infinity;
+    
         float dstX = Mathf.Pow((coordsB[0] - coordsA[0]), 2);
         float dstY = Mathf.Pow((coordsB[1] - coordsA[1]), 2);
 

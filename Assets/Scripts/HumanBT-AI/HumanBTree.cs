@@ -18,10 +18,10 @@ public class HumanBTree : BTree
                 new Selector(new List<Node> {
                     new Fight(),
                     new Conquer(),
+                    // need another scrip for simply wandering in case there's nothing left to conquer -- check for that in the conquer script
                 }),
                 new EndTurn()
-            }), 
-            new EndTurn()
+            }),
         });
 
         return root;

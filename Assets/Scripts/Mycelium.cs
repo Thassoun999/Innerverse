@@ -107,7 +107,9 @@ public class Mycelium : MonoBehaviour
         if (currHealth <= 0)
             Destroy(gameObject);
 
-        if(GameManager.Instance.PlayerTurn) {
+        // Not enough that is the player's turn but we also need to make sure that no human movement is occuring
+        // Animations and movement on enemy team need to finish for input to be accepted (will wait as long as is needed)
+        if(GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()) {
 
             // First check that we're not already poor
             if(GameManager.Instance.ActionPoints > 0){
@@ -139,7 +141,6 @@ public class Mycelium : MonoBehaviour
 
             // End turn action
             if(Input.GetKeyDown(KeyCode.Return)) {
-                Debug.Log("my turn ended");
                 GameManager.Instance.advanceTurn();
             }
         }

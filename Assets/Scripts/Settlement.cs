@@ -50,6 +50,16 @@ public class Settlement : MonoBehaviour
         setHighlight = gameObject.GetComponent<Highlight>();
     }
 
+    void OnDestroy()
+    {
+        int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
+        GameManager.SettlementBuilt[biomeSpec] = 0;
+
+        GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0;
+        GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null;
+        GameManager.Instance.removeSettlement(this.gameObject.GetInstanceID());
+    }
+
     void Start()
     {
         // On awake, get your coordinate system! Possibly through the game manager
@@ -66,7 +76,7 @@ public class Settlement : MonoBehaviour
         // Check what kind of grid we are on, update the static Human settlement list
         int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
 
-        Human.SettlemntBuilt[biomeSpec] = 1;
+        GameManager.SettlementBuilt[biomeSpec] = 1;
     }
 
     void Update()
@@ -80,8 +90,10 @@ public class Settlement : MonoBehaviour
 
         Debug.Log("here I am");
 
-        /*
         float randVal = Random.Range(0.0f, 1.0f);
+
+        Debug.Log("Random Value: " + randVal);
+        Debug.Log("Spawn Chance: " + GameManager.Instance.SettlementSpawnChance);
 
         // If this works then the random chance worked!!! Spawn a human!
         if(randVal <= GameManager.Instance.SettlementSpawnChance) {
@@ -95,19 +107,16 @@ public class Settlement : MonoBehaviour
 
                     if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 0) {
                         Debug.Log("there I am");
-                        SpawnManager.Instance.Spawn(row + i, col + j, "Hum");
-                        if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].SpecialClassifier == 1)
-                            GameManager.Instance.HumanCountBiome1++;
-                        else if (GameManager.Instance.CoordsToGridNode[(row + i, col + j)].SpecialClassifier == 1)
-                            GameManager.Instance.HumanCountBiome2++;
-
                         GameManager.Instance.SettlementSpawnChance = 0.1f;
+                        Debug.Log("New Spawn Chance: " + GameManager.Instance.SettlementSpawnChance);
+                        SpawnManager.Instance.Spawn(row + i, col + j, "Hum");
+
                         return; // leave immediately after spawning a guy in
                     }
                     
                 }
             }
-        } */
+        }
     }
 
     public void Damage() {

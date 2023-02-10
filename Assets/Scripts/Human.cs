@@ -17,9 +17,17 @@ public class Human : MonoBehaviour
     private bool clickable;
     private bool selected;
 
-    private int totalRange = 4;
-
-    private static int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
+    // Walking varaibles for movement algorithm
+    private int totalRange = 3;
+    private bool moveActivated;
+    private bool walking;
+    private List<GridNode> path;
+    private GridNode currNode;
+    private Vector3 currTarget;
+    private int pathInd;
+    private int pathRange;
+    private float recordedDistanceToNode;
+    private Vector3 velocity;
 
     // ~ Properties ~
     public int[] Coordinates{
@@ -44,21 +52,21 @@ public class Human : MonoBehaviour
         }
     }
 
-    public static int[] SettlemntBuilt{
-        get {
-            return settlementBuilt;
-        }
-        set {
-            settlementBuilt = value;
-        }
-    }
-
     public bool Clickable {
         get {
             return clickable;
         }
         set {
             clickable = value;
+        }
+    }
+
+    public bool MoveActivated {
+        get {
+            return moveActivated;
+        } 
+        set {
+            moveActivated = value;
         }
     }
 
@@ -82,7 +90,10 @@ public class Human : MonoBehaviour
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 2; // set to Human
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = gameObject;
 
+        // No need to update the humancountbiome here since advanceTurn calculates totals after a spawn happens
         currHealth = maxHealth;
+        walking = false;
+        moveActivated = false;
     }
 
     void OnDestroy()
@@ -90,6 +101,7 @@ public class Human : MonoBehaviour
         GameManager.Instance.removeHuman(this.gameObject.GetInstanceID());
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+
     }
 
     // Update is called once per frame
@@ -98,6 +110,83 @@ public class Human : MonoBehaviour
     {
         if (currHealth <= 0)
             Destroy(gameObject);
+
+        // Walking animation -- this needs to be changed into a forloop
+        if(moveActivated) {
+            Debug.Log("MOVE START MOVE START MOVE START");
+            if (pathInd < path.Count && pathRange > 0) {
+                if(walking == false) { // Guaranteed to always go first -- Set Destination
+                    
+                    walking = true;
+                    currNode = path[pathInd];
+
+                    // Need the human's Y here to not sink it into the ground
+                    currTarget = new Vector3(
+                        currNode.gameObject.transform.localPosition.x,
+                        gameObject.transform.localPosition.y,
+                        currNode.gameObject.transform.localPosition.z
+                    );
+                } else if(walking == true && recordedDistanceToNode < 0.1f) {
+                    // Move on to next grid
+                    Debug.Log("next grid");
+                    pathRange--;
+                    pathInd++;
+                    walking = false;
+                }
+
+                Vector3 adjustedAgentPos = new Vector3(gameObject.transform.localPosition.x, 0, gameObject.transform.localPosition.z);
+                Vector3 adjustedDestPos = new Vector3(currNode.gameObject.transform.localPosition.x, 0, currNode.gameObject.transform.localPosition.z);
+                recordedDistanceToNode = Vector3.Distance(adjustedAgentPos, adjustedDestPos);
+
+                gameObject.transform.localPosition = Vector3.SmoothDamp(
+                    gameObject.transform.localPosition,
+                    currTarget,
+                    ref velocity,
+                    0.3f
+                );
+            } else { // walking done, need to solidify the value of our human
+                int[] currNodeCoords = currNode.Coordinates;
+
+                row = currNodeCoords[0];
+                col = currNodeCoords[1];
+
+                // SmoothDamp works with approximates, we need to snap to our last position and record it!
+                gameObject.transform.localPosition = new Vector3(
+                    (float)row, 
+                    gameObject.transform.localPosition.y, 
+                    (float)col
+                );
+                moveActivated = false;
+            }
+        }
+    }
+
+    public void SetPath(ref List<GridNode> newPath) {
+        path = newPath;
+        moveActivated = true;
+
+        GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0;
+        GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+
+        pathInd = 0;
+        walking = false;
+
+        pathRange = totalRange;
+        recordedDistanceToNode = Mathf.Infinity;
+        velocity = Vector3.zero;
+
+        // Anticipate that grid being occupied (important so that no human's destination ends up being the same spot)
+        int[] lastNodeCoords;
+
+        // EITHER SET IT AS THE TOTAL RANGE OR THE PATH LENGTH IF PATH IS SHORTER!!!
+        if(totalRange < path.Count) {
+            lastNodeCoords = path[totalRange - 1].Coordinates;
+        } else {
+            lastNodeCoords = path[path.Count - 1].Coordinates;
+        }
+        GameManager.Instance.CoordsToGridNode[(lastNodeCoords[0], lastNodeCoords[1])].Occupation = 2;
+        GameManager.Instance.CoordsToGridNode[(lastNodeCoords[0], lastNodeCoords[1])].Standing = gameObject;
+
     }
 
     // Simply for taking a step closer to whatever destination is chosen

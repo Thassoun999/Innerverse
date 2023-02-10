@@ -38,6 +38,10 @@ public class GameManager : MonoBehaviour
 
     private float _settlementSpawnChance = 0.1f;
 
+    private static int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
+
+    private string humanAction;
+    
     // ~ Properties ~
 
     // Encapsulation -- For other classes to access our unique instance, we are creating a public property with just a get option (get or set member variables of class)
@@ -52,6 +56,15 @@ public class GameManager : MonoBehaviour
                 Debug.LogError("Game Manager is NULL");
             
             return _instance;
+        }
+    }
+
+    public string HumanAction {
+        get {
+            return humanAction;
+        }
+        set {
+            humanAction = value;
         }
     }
 
@@ -183,6 +196,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public static int[] SettlementBuilt{
+        get {
+            return settlementBuilt;
+        }
+        set {
+            settlementBuilt = value;
+        }
+    }
 
     // ~ Methods ~
 
@@ -209,7 +230,7 @@ public class GameManager : MonoBehaviour
 
         grids = FindObjectsOfType<GridNode>();
 
-        isPlayerTurn = true; // always starts off as the player's turn
+        isPlayerTurn = true; // always starts off as the player's turn (CHANGE THIS!)
         currActionPoints = maxActionPoionts;
 
         Dictionary<int, List<int>> tempDict = new Dictionary<int,  List<int>>(); // temporary dictionary we will convert to list later
@@ -269,6 +290,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("Mycelium Wins!!!!!");
         }
 
+        // This should only be a possible win for mycelium since we are looking to cap this amnt
         // CHECK 2 -- Check to see if >75% of the grid map is covered (is occupied) -- Winner is whoever has higher count
         float ratio = (float)(_MyceliumCount + _HumanCount) / (float)(CoordsToGridNode.Count);
         if(ratio >= 0.75) {
@@ -286,26 +308,47 @@ public class GameManager : MonoBehaviour
 
     }
 
+    // May be a good idea to make this a coroutine -- deactivate player input and wait for animations to finish!
     public void advanceTurn() {
 
-        Debug.Log("Turn Switch");
 
         // Change the turn and set to opposing action points
-        isPlayerTurn =! isPlayerTurn;
+        isPlayerTurn =! isPlayerTurn; // THIS NEEDS TO HAPPEN
 
-        // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
-        countInSpecialBiome();
+        // But keep input disabled until all animations are done! 
+        // Moreso for human animations since they just seem to end their turn willy nilly
 
-        // Every Settlement attempts to spawn a human!
-        foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
-            elem.Value.SpawnHuman();
+        // Every Settlement attempts to spawn a human! Only do this on the human turn!
+        if (!isPlayerTurn) {
+            
+            // If Settlement spawns a human, reset the chance back to 10%
+            foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
+                elem.Value.SpawnHuman();
+            }
+
+            _settlementSpawnChance += 0.05f; // Increase chance of settlement spawning human per turn
         }
 
-        _settlementSpawnChance += 0.45f; // Increase chance of settlement spawning human per turn
-        // If Settlement spawns a human, reset the chance back to 10%
+        // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
+        CountInSpecialBiome();
+
+        return;
     }
 
-    public void countInSpecialBiome() {
+    public bool NoHumanMovement() {
+        bool nowalking = true;
+        foreach (KeyValuePair<int, Human> elem in _HumanGroup) {
+            if (elem.Value.MoveActivated == true) {
+                nowalking = false;
+                break;
+            }
+        }
+
+        return nowalking;
+    }
+
+
+    private void CountInSpecialBiome() {
         int tempHumanBiome1Count = 0;
         int tempHumanBiome2Count = 0;
         int tempMycBiome1Count = 0;
