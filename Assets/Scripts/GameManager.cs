@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
 
     private float _settlementSpawnChance = 0.1f;
 
-    private static int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
+    public int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
 
     private string humanAction;
     
@@ -196,7 +196,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static int[] SettlementBuilt{
+    public int[] SettlementBuilt{
         get {
             return settlementBuilt;
         }
@@ -310,13 +310,20 @@ public class GameManager : MonoBehaviour
 
     // May be a good idea to make this a coroutine -- deactivate player input and wait for animations to finish!
     public void advanceTurn() {
-
-
         // Change the turn and set to opposing action points
         isPlayerTurn =! isPlayerTurn; // THIS NEEDS TO HAPPEN
+        currActionPoints = maxActionPoionts;
 
         // But keep input disabled until all animations are done! 
         // Moreso for human animations since they just seem to end their turn willy nilly
+
+        // Unselect all Mycelium and Reset their action
+        foreach(KeyValuePair<int, Mycelium> elem in _MyceliumGroup) {
+            if(elem.Value.Selected) {
+                elem.Value.Selected = false;
+                elem.Value.Reset();
+            }
+        }
 
         // Every Settlement attempts to spawn a human! Only do this on the human turn!
         if (!isPlayerTurn) {

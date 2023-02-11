@@ -53,7 +53,6 @@ public class SpawnManager : MonoBehaviour
     
         }
         else if (spawnSpecification == "Hum"){
-            Debug.Log("Human spawns");
             temp = GameObject.Instantiate(_HumSpawn, position, transform.rotation);
             
             Human tempHum = temp.GetComponent(typeof(Human)) as Human;

@@ -53,7 +53,7 @@ public class Settlement : MonoBehaviour
     void OnDestroy()
     {
         int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
-        GameManager.SettlementBuilt[biomeSpec] = 0;
+        GameManager.Instance.SettlementBuilt[biomeSpec] = 0;
 
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0;
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null;
@@ -76,7 +76,7 @@ public class Settlement : MonoBehaviour
         // Check what kind of grid we are on, update the static Human settlement list
         int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
 
-        GameManager.SettlementBuilt[biomeSpec] = 1;
+        GameManager.Instance.SettlementBuilt[biomeSpec] = 1;
     }
 
     void Update()

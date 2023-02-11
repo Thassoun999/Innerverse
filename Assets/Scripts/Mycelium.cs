@@ -60,6 +60,15 @@ public class Mycelium : MonoBehaviour
         }
     }
 
+    public bool Selected {
+        get {
+            return selected;
+        }
+        set {
+            selected = value;
+        }
+    }
+
     // ~ Methods ~
 
     // Awake is called before the game starts -- use this to set up references (does not need to be enabled)
@@ -162,7 +171,7 @@ public class Mycelium : MonoBehaviour
         toAttack.Damage();
     }
 
-    void Reset() {
+    public void Reset() {
         actionReady = false;
         gridSelect = null;
         selected = false;
@@ -176,6 +185,7 @@ public class Mycelium : MonoBehaviour
             grid.MyceliumSelect = null;
         }
 
+        // NOTE: Settlements are clickable too make sure to include them
         foreach(GridNode grid in occupiedGrids) {
             grid.GridHighlight.ToggleHighlightChoice(false, Color.red);
             grid.Clickable = false;
@@ -261,6 +271,7 @@ public class Mycelium : MonoBehaviour
                     grid.MyceliumSelect = this;
                 }
 
+                // NOTE: Settlements are clickable, make sure to get them as well!
                 foreach(GridNode grid in occupiedGrids) {
                     grid.GridHighlight.ToggleHighlightChoice(true, Color.red);
                     grid.Clickable = true;
@@ -269,6 +280,7 @@ public class Mycelium : MonoBehaviour
                     inOccupied.Clickable = true;
                 }
 
+                Debug.Log("selected!");
                 selected = true;
                 mycHighlight.ToggleHighlight(true);
             } else { // our object is being deselected

@@ -15,8 +15,8 @@ public class Conquer : Node
     {
         // Don't conquer if there's nothing to conquer (we don't care about the first settlement)
         if(GameManager.Instance.PlayerTurn || (
-            GameManager.SettlementBuilt[1] == 1 
-            && GameManager.SettlementBuilt[2] == 1))
+            GameManager.Instance.SettlementBuilt[1] == 1 
+            && GameManager.Instance.SettlementBuilt[2] == 1))
             return NodeState.FAILURE;
 
         float humanToMycRatio = (float)GetData("Scan Ratio");
@@ -40,8 +40,27 @@ public class Conquer : Node
             float distanceToBiome1 = GetDistance(tempHumanCoords, specialBiome1EdgeCoords);
             float distanceToBiome2 = GetDistance(tempHumanCoords, specialBiome2EdgeCoords);
 
+            // Conquer check:
+            // 1) If both settlements are unconquered, take the path to the shortest
+            // 2) If at least one is conquered, go to the next one
+            // 3) If all of them are conquered we shouldn't even be here we should be wandering!
+            string strategyOption = "None";
+
+            if(GameManager.Instance.SettlementBuilt[1] == 0 && GameManager.Instance.SettlementBuilt[2] == 0) {
+                if(distanceToBiome1 <= distanceToBiome2) {
+                    strategyOption = "Conquer1";
+                } else {
+                    strategyOption = "Conquer2";
+                }
+            } else if(GameManager.Instance.SettlementBuilt[1] == 0) {
+                strategyOption = "Conquer1";
+            } else if(GameManager.Instance.SettlementBuilt[2] == 0) {
+                strategyOption = "Conquer2";
+            }
+
             // Don't just check for distance but also check if that settlement has already been conquered or not (TO WORK ON)
-            if(distanceToBiome1 >= distanceToBiome2 && GameManager.SettlementBuilt[2] == 0) {
+            if(strategyOption == "Conquer2") {
+                Debug.Log("Conquer Option Biome 2");
                 // Go to Biome 2 (shorter distance)
                 float shortestDistance = 1000000.0f;
                 // Find a node that is unoccupied, of the biome type, and the closest to our Human
@@ -67,7 +86,8 @@ public class Conquer : Node
                 // Move our soldier
                 Move(path, ref tempHum);
 
-            } else if (distanceToBiome1 < distanceToBiome2 && GameManager.SettlementBuilt[1] == 0) {
+            } else if (strategyOption == "Conquer1") {
+                Debug.Log("Conquer Option Biome 1");
                 // Go to Biome 1 (shorter distance)
                 float shortestDistance = 1000000.0f;
                 // Find a node that is unoccupied, of the biome type, and the closest to our Human
@@ -91,7 +111,6 @@ public class Conquer : Node
                     continue;
 
                 // Move our soldier
-                Debug.Log("Biome 1 go!");
                 Move(path, ref tempHum);
             }
         }

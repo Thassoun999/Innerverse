@@ -17,7 +17,7 @@ public class GridNode : MonoBehaviour {
 
     private Mycelium myceliumSelect = null;
 
-    private GameObject standing = null; // this will help with the special biome classification
+    public GameObject standing = null; // this will help with the special biome classification
 
     // Special Grid properties
     public int specialClassifier = 0; // Default to 0, 1 for biome 1, 2 for biome 2

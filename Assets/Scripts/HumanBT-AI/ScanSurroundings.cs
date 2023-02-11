@@ -28,7 +28,7 @@ public class ScanSurroundings : Node
                     // There's a Mycelium
                     if (GameManager.Instance.CoordsToGridNode[(tempHumanCoords[0] + i, tempHumanCoords[1] + j)].Occupation == 1) {
                         GameObject newMyc = GameManager.Instance.CoordsToGridNode[(tempHumanCoords[0] + i, tempHumanCoords[1] + j)].Standing;
-                        if(!(tempMycRecord[newMyc.GetInstanceID()])) {
+                        if(!(tempMycRecord.ContainsKey(newMyc.GetInstanceID()))) {
                             tempMycRecord.Add(newMyc.GetInstanceID(), newMyc.GetComponent(typeof (Mycelium)) as Mycelium);
                         }
                     }

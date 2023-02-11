@@ -26,6 +26,9 @@ public class Fight : Node
             Human tempHum = elem.Value;
             int[] tempHumanCoords = tempHum.Coordinates;
             GridNode start = GameManager.Instance.CoordsToGridNode[(tempHumanCoords[0], tempHumanCoords[1])];
+
+            List<GridNode> nearestMyceliumPath = null;
+            int[] nearestMycCoords = new int[] {-1, -1};
             for(int i = -tempHum.TotalRange; i < tempHum.TotalRange + 1; i++) {
                 for(int j = -tempHum.TotalRange; j < tempHum.TotalRange + 1; j++) {
                     if (i == 0 && j == 0)
@@ -70,10 +73,22 @@ public class Fight : Node
                         if(path == null)
                             continue;
 
-                        // Move our soldier to attack!!
-                        Move(path, ref tempHum, coords);
+                        if(nearestMyceliumPath == null) {
+                            nearestMycCoords = coords;
+                            nearestMyceliumPath = path;
+                        }
+
+                        if(path.Count < nearestMyceliumPath.Count) {
+                            nearestMycCoords = coords;
+                            nearestMyceliumPath = path;
+                        }
                     }
                 }
+            }
+
+            if(nearestMyceliumPath != null) {
+                // Move our soldier to attack!!
+                Move(nearestMyceliumPath, ref tempHum, nearestMycCoords);
             }
         }
 
@@ -81,9 +96,17 @@ public class Fight : Node
     }
 
     void Move(List<GridNode> path, ref Human agentToMove, int[] mycAttackCoords) {
-        
-        agentToMove.SetTarget(mycAttackCoords);
-        agentToMove.SetPath(ref path);
+
+        if (path.Count == 0 || path == null) {
+            // path can't be set, just set the target and attack!
+            Debug.Log("no move");
+            agentToMove.SetTarget(mycAttackCoords);
+            agentToMove.Attack();
+        } else {
+            Debug.Log("move");
+            agentToMove.SetTarget(mycAttackCoords);
+            agentToMove.SetPath(ref path); // attacking occurs here when the path is finished being walked if target is set
+        }
 
         return;
     }

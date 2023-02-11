@@ -118,7 +118,6 @@ public class Human : MonoBehaviour
 
         // Walking animation -- this needs to be changed into a forloop
         if(moveActivated) {
-            Debug.Log("MOVE START MOVE START MOVE START");
             if (pathInd < path.Count && pathRange > 0) {
                 if(walking == false) { // Guaranteed to always go first -- Set Destination
                     
@@ -133,7 +132,6 @@ public class Human : MonoBehaviour
                     );
                 } else if(walking == true && recordedDistanceToNode < 0.1f) {
                     // Move on to next grid
-                    Debug.Log("next grid");
                     pathRange--;
                     pathInd++;
                     walking = false;
@@ -165,16 +163,14 @@ public class Human : MonoBehaviour
 
                 // This isn't just a move, but also an attack! Damage our Mycelium!
                 if (attackTime) {
-                    Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].Standing.GetComponent(
-                        typeof(Mycelium)) as Mycelium;
-                    tempMyc.Damage();
-                    attackTime = false;
+                    Attack();
                 }
             }
         }
     }
 
     public void SetPath(ref List<GridNode> newPath) {
+
         path = newPath;
         moveActivated = true;
 
@@ -195,7 +191,7 @@ public class Human : MonoBehaviour
         if(totalRange < path.Count) {
             lastNodeCoords = path[totalRange - 1].Coordinates;
         } else {
-            lastNodeCoords = path[path.Count - 1].Coordinates;
+            lastNodeCoords = path[path.Count - 1].Coordinates; 
         }
         GameManager.Instance.CoordsToGridNode[(lastNodeCoords[0], lastNodeCoords[1])].Occupation = 2;
         GameManager.Instance.CoordsToGridNode[(lastNodeCoords[0], lastNodeCoords[1])].Standing = gameObject;
@@ -212,6 +208,14 @@ public class Human : MonoBehaviour
         Debug.Log("Human hit!!!");
         currHealth -= 5;
         Debug.Log(currHealth);
+    }
+
+    public void Attack() {
+        Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].Standing.GetComponent(typeof(Mycelium)) as Mycelium;
+        if(tempMyc) {
+            tempMyc.Damage();
+            attackTime = false;
+        }
     }
 
     void OnMouseDown() {

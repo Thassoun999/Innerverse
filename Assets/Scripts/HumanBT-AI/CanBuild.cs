@@ -19,7 +19,7 @@ public class CanBuild : Node
         if (t == null) {
             int[] temp = new int[] {-1, -1};
             // Check if count requirements are met
-            if(GameManager.Instance.HumanCountBiome1 >= 5 && GameManager.SettlementBuilt[1] == 0) {
+            if(GameManager.Instance.HumanCountBiome1 >= 5 && GameManager.Instance.SettlementBuilt[1] == 0) {
                 // Check for the first available space to build our settlement!
                 foreach (KeyValuePair<(int, int), GridNode> elem in GameManager.Instance.CoordsToGridNode){
                     if(elem.Value.Occupation == 0 && elem.Value.SpecialClassifier == 1) {
@@ -33,7 +33,7 @@ public class CanBuild : Node
                 }
             }
 
-            if(GameManager.Instance.HumanCountBiome2 >= 5 && GameManager.SettlementBuilt[2] == 0) {
+            if(GameManager.Instance.HumanCountBiome2 >= 5 && GameManager.Instance.SettlementBuilt[2] == 0) {
             // Check for the first available space to build our settlement!
                 foreach (KeyValuePair<(int, int), GridNode> elem in GameManager.Instance.CoordsToGridNode){
                     if(elem.Value.Occupation == 0 && elem.Value.SpecialClassifier == 2) {
