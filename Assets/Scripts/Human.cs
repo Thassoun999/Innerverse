@@ -17,6 +17,22 @@ public class Human : MonoBehaviour
     private bool clickable;
     private bool selected;
 
+    // Walking varaibles for movement algorithm
+    private int totalRange = 3;
+    private bool moveActivated;
+    private bool walking;
+    private List<GridNode> path;
+    private GridNode currNode;
+    private Vector3 currTarget;
+    private int pathInd;
+    private int pathRange;
+    private float recordedDistanceToNode;
+    private Vector3 velocity;
+
+    // Attacking parameters
+    private int[] attackingCoords;
+    private bool attackTime;
+
     // ~ Properties ~
     public int[] Coordinates{
         get {
@@ -34,12 +50,27 @@ public class Human : MonoBehaviour
         }
     }
 
+    public int TotalRange {
+        get {
+            return totalRange;
+        }
+    }
+
     public bool Clickable {
         get {
             return clickable;
         }
         set {
             clickable = value;
+        }
+    }
+
+    public bool MoveActivated {
+        get {
+            return moveActivated;
+        } 
+        set {
+            moveActivated = value;
         }
     }
 
@@ -63,7 +94,11 @@ public class Human : MonoBehaviour
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 2; // set to Human
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = gameObject;
 
+        // No need to update the humancountbiome here since advanceTurn calculates totals after a spawn happens
         currHealth = maxHealth;
+        walking = false;
+        moveActivated = false;
+        attackTime = false;
     }
 
     void OnDestroy()
@@ -71,23 +106,116 @@ public class Human : MonoBehaviour
         GameManager.Instance.removeHuman(this.gameObject.GetInstanceID());
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+
     }
 
     // Update is called once per frame
+
     void Update()
     {
         if (currHealth <= 0)
             Destroy(gameObject);
 
-        if(!GameManager.Instance.PlayerTurn) {
-            Debug.Log("Human Turn");
+        // Walking animation -- this needs to be changed into a forloop
+        if(moveActivated) {
+            if (pathInd < path.Count && pathRange > 0) {
+                if(walking == false) { // Guaranteed to always go first -- Set Destination
+                    
+                    walking = true;
+                    currNode = path[pathInd];
+
+                    // Need the human's Y here to not sink it into the ground
+                    currTarget = new Vector3(
+                        currNode.gameObject.transform.localPosition.x,
+                        gameObject.transform.localPosition.y,
+                        currNode.gameObject.transform.localPosition.z
+                    );
+                } else if(walking == true && recordedDistanceToNode < 0.1f) {
+                    // Move on to next grid
+                    pathRange--;
+                    pathInd++;
+                    walking = false;
+                }
+
+                Vector3 adjustedAgentPos = new Vector3(gameObject.transform.localPosition.x, 0, gameObject.transform.localPosition.z);
+                Vector3 adjustedDestPos = new Vector3(currNode.gameObject.transform.localPosition.x, 0, currNode.gameObject.transform.localPosition.z);
+                recordedDistanceToNode = Vector3.Distance(adjustedAgentPos, adjustedDestPos);
+
+                gameObject.transform.localPosition = Vector3.SmoothDamp(
+                    gameObject.transform.localPosition,
+                    currTarget,
+                    ref velocity,
+                    0.3f
+                );
+            } else { // walking done, need to solidify the value of our human
+                int[] currNodeCoords = currNode.Coordinates;
+
+                row = currNodeCoords[0];
+                col = currNodeCoords[1];
+
+                // SmoothDamp works with approximates, we need to snap to our last position and record it!
+                gameObject.transform.localPosition = new Vector3(
+                    (float)row, 
+                    gameObject.transform.localPosition.y, 
+                    (float)col
+                );
+                moveActivated = false;
+
+                // This isn't just a move, but also an attack! Damage our Mycelium!
+                if (attackTime) {
+                    Attack();
+                }
+            }
         }
+    }
+
+    public void SetPath(ref List<GridNode> newPath) {
+
+        path = newPath;
+        moveActivated = true;
+
+        GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0;
+        GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+
+        pathInd = 0;
+        walking = false;
+
+        pathRange = totalRange;
+        recordedDistanceToNode = Mathf.Infinity;
+        velocity = Vector3.zero;
+
+        // Anticipate that grid being occupied (important so that no human's destination ends up being the same spot)
+        int[] lastNodeCoords;
+
+        // EITHER SET IT AS THE TOTAL RANGE OR THE PATH LENGTH IF PATH IS SHORTER!!!
+        if(totalRange < path.Count) {
+            lastNodeCoords = path[totalRange - 1].Coordinates;
+        } else {
+            lastNodeCoords = path[path.Count - 1].Coordinates; 
+        }
+        GameManager.Instance.CoordsToGridNode[(lastNodeCoords[0], lastNodeCoords[1])].Occupation = 2;
+        GameManager.Instance.CoordsToGridNode[(lastNodeCoords[0], lastNodeCoords[1])].Standing = gameObject;
+
+    }
+
+    // Sets the target and enables attacking
+    public void SetTarget(int[] coords) {
+        attackTime = true;
+        attackingCoords = coords;
     }
 
     public void Damage() {
         Debug.Log("Human hit!!!");
         currHealth -= 5;
         Debug.Log(currHealth);
+    }
+
+    public void Attack() {
+        Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].Standing.GetComponent(typeof(Mycelium)) as Mycelium;
+        if(tempMyc) {
+            tempMyc.Damage();
+            attackTime = false;
+        }
     }
 
     void OnMouseDown() {
