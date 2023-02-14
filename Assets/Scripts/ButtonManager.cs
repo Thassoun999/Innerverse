@@ -11,6 +11,8 @@ public class ButtonManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Ensures that click radius is the image and not based on rectangle around mouse cursor (checks for alpha fields)
+        // If transparent, does not click on anything -- even if the image is there
         this.GetComponent<Image>().alphaHitTestMinimumThreshold = alphaThreshold;   
     }
 
