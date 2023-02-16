@@ -43,6 +43,17 @@ public class UIManager : MonoBehaviour
         _instance = this;
 
         DontDestroyOnLoad(gameObject);
+    
+        _GameWheelItems = new Dictionary<string, GameObject>();
+
+        // Ensures that click radius is the image and not based on rectangle around mouse cursor (checks for alpha fields)
+        // If transparent, does not click on anything -- even if the image is there
+        // Here we're iterating through all child game objects of the Game Wheel to enable this feature
+        foreach(Transform child in GameWheel.transform) {
+            child.gameObject.GetComponent<Image>().alphaHitTestMinimumThreshold = alphaThreshold;
+            _GameWheelItems[child.name] = child.gameObject;
+            items.Add(child.name);
+        }
     }
 
     // Start is called before the first frame update
