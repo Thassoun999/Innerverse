@@ -15,7 +15,6 @@ public class UIManager : MonoBehaviour
     public GameObject GameWheel;
     private bool _GameWheelEnable;
     private Dictionary<string, GameObject> _GameWheelItems;
-    public List<string> items;
 
     private float[] actionBarFillAmount = new float[] {0f, 0.335f, 0.382f, 0.429f, 0.48f, 0.527f, 0.574f, 0.621f, 0.669f, 0.716f, 0.764f, 0.815f, 0.858f, 0.909f, 0.957f, 1.0f};
 
@@ -52,24 +51,13 @@ public class UIManager : MonoBehaviour
         foreach(Transform child in GameWheel.transform) {
             child.gameObject.GetComponent<Image>().alphaHitTestMinimumThreshold = alphaThreshold;
             _GameWheelItems[child.name] = child.gameObject;
-            items.Add(child.name);
         }
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        _GameWheelItems = new Dictionary<string, GameObject>();
         _GameWheelEnable = false;
-
-        // Ensures that click radius is the image and not based on rectangle around mouse cursor (checks for alpha fields)
-        // If transparent, does not click on anything -- even if the image is there
-        // Here we're iterating through all child game objects of the Game Wheel to enable this feature
-        foreach(Transform child in GameWheel.transform) {
-            child.gameObject.GetComponent<Image>().alphaHitTestMinimumThreshold = alphaThreshold;
-            _GameWheelItems[child.name] = child.gameObject;
-            items.Add(child.name);
-        }
    
         DisableGameWheel();
     }
