@@ -11,7 +11,9 @@ public class Mycelium : MonoBehaviour
     private int row;
     private int col;
     private int maxHealth = 10;
-    public int currHealth;
+    private int currHealth;
+    [SerializeField] private HealthBar _healthbar;
+    private bool reinforced; 
 
     private Highlight mycHighlight;
     private bool highlighting;
@@ -24,8 +26,7 @@ public class Mycelium : MonoBehaviour
 
     private GridNode gridSelect = null;
 
-    private bool actionReady = false;
-
+    public bool actionReady = false;
 
     // ~ Properties ~
 
@@ -46,6 +47,9 @@ public class Mycelium : MonoBehaviour
     }
 
     public bool ActionReady {
+        get {
+            return actionReady;
+        }
         set {
             actionReady = value;
         }
@@ -69,6 +73,12 @@ public class Mycelium : MonoBehaviour
         }
     }
 
+    public bool Reinforced {
+        get {
+            return reinforced;
+        }
+    }
+
     // ~ Methods ~
 
     // Awake is called before the game starts -- use this to set up references (does not need to be enabled)
@@ -86,6 +96,7 @@ public class Mycelium : MonoBehaviour
         row = (int)transform.localPosition.x;
         col = (int)transform.localPosition.z;
         currHealth = maxHealth;
+        reinforced = false;
 
         highlighting = false;
         selected = false;
@@ -96,6 +107,9 @@ public class Mycelium : MonoBehaviour
         // Set grid we are standing on to occupied
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 1; // set to Mycelium
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = gameObject;
+    
+        // Set the healthbar to max
+        _healthbar.UpdateHealthBar(maxHealth, currHealth);
     }
     
     void OnDestroy()
@@ -115,46 +129,9 @@ public class Mycelium : MonoBehaviour
 
         if (currHealth <= 0)
             Destroy(gameObject);
-
-        // Not enough that is the player's turn but we also need to make sure that no human movement is occuring
-        // Animations and movement on enemy team need to finish for input to be accepted (will wait as long as is needed)
-        if(GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()) {
-
-            // First check that we're not already poor
-            if(GameManager.Instance.ActionPoints > 0){
-                // actionReady only assigned true when this Mycelium is selected AND grid is selected
-                if(actionReady && GameManager.Instance.ActionPoints > 0) {
-                    if(Input.GetKeyDown(KeyCode.A) && (GameManager.Instance.ActionPoints - 2) >= 0 && gridSelect.Occupation == 0) {
-                        // Grow Action method here -- NEEDS TO BE AN UNOCCUPIED GRID
-                        Grow();
-                        // Action point spent here
-                        GameManager.Instance.ActionPoints -= 2;
-                        Reset();
-                    } else if(Input.GetKeyDown(KeyCode.S) && (GameManager.Instance.ActionPoints - 10) >= 0 && (gridSelect.Occupation == 2 || gridSelect.Occupation == 3)) {
-                        // Basic Attack Action method here -- NEEDS TO BE AN OCCUPIED GRID
-                        Attack();
-                        //Action point spent here
-                        GameManager.Instance.ActionPoints -= 10;
-                        Reset();
-                    }
-                } else if (!actionReady && GameManager.Instance.IsSelecting == this) { // This statement should only be reached if no grid selected but Mycelium is
-                    if(Input.GetKeyDown(KeyCode.D) && (GameManager.Instance.ActionPoints - 5) >= 0) {
-                        Debug.Log("DEFENSE UP");
-
-                        GameManager.Instance.ActionPoints -= 5;
-                        Reset();
-                    }
-                }
-            }
-
-            // End turn action
-            if(Input.GetKeyDown(KeyCode.Return)) {
-                GameManager.Instance.advanceTurn();
-            }
-        }
     }
 
-    void Grow() {
+    public void Grow() {
         // SPAWN a mycelium on a selected grid
         SpawnManager.Instance.Spawn(gridSelect.Coordinates[0], gridSelect.Coordinates[1], "Myc");
         
@@ -164,11 +141,68 @@ public class Mycelium : MonoBehaviour
         } else if(gridSelect.SpecialClassifier == 2) {
             GameManager.Instance.MyceliumCountBiome2++;
         }
+        GameManager.Instance.ActionPoints -= 5;
+        Reset();
+        UIManager.Instance.DisableGameWheel();
     }
 
-    void Attack() {
-        Human toAttack = gridSelect.Standing.GetComponent(typeof(Human)) as Human;
-        toAttack.Damage();
+    public void Attack() {
+        // We can attack Humans or Settlements please fix this...
+        if(gridSelect.Occupation == 2) {
+            Human toAttack = gridSelect.Standing.GetComponent(typeof(Human)) as Human;
+            toAttack.Damage();
+        } else if(gridSelect.Occupation == 3) {
+            Settlement toAttack = gridSelect.Standing.GetComponent(typeof(Settlement)) as Settlement;
+            toAttack.Damage();
+        }
+        GameManager.Instance.ActionPoints -= 6;
+        Reset();
+        UIManager.Instance.DisableGameWheel();
+    }
+
+    public void Reinforce() {
+        if(reinforced) {
+            return;
+        }
+
+        reinforced = true;
+        currHealth += 5;
+        GameManager.Instance.ActionPoints -= 3;
+        Reset();
+        UIManager.Instance.DisableGameWheel();
+    }
+
+    public void SelfDestruct() {
+        //Damage all enemies around us in a 1 grid radius
+        for(int i = -1; i < 2; i++) {
+            for(int j = -1; j < 2; j++) {
+                if(i == 0 && j == 0)
+                    continue;
+                
+                if (!(GameManager.Instance.CoordsToGridNode.ContainsKey((row + i, col + j)))) {
+                    continue;
+                }
+
+                GridNode gridCopy = GameManager.Instance.CoordsToGridNode[(row + i, col + j)];
+
+                // Human
+                if(gridCopy.Occupation == 2) {
+                    Human humanToDamage = gridCopy.Standing.GetComponent(typeof(Human)) as Human;
+                    humanToDamage.Damage();
+                } else if(gridCopy.Occupation == 3) { // Settlement
+                    Settlement settlementToDamage = gridCopy.Standing.GetComponent(typeof(Settlement)) as Settlement;
+                    settlementToDamage.Damage();
+                }
+
+            }
+        }
+
+        GameManager.Instance.ActionPoints -= 15;
+
+        // Then destroy yourself
+        Reset();
+        UIManager.Instance.DisableGameWheel();
+        Destroy(gameObject);
     }
 
     public void Reset() {
@@ -185,13 +219,17 @@ public class Mycelium : MonoBehaviour
             grid.MyceliumSelect = null;
         }
 
-        // NOTE: Settlements are clickable too make sure to include them
         foreach(GridNode grid in occupiedGrids) {
             grid.GridHighlight.ToggleHighlightChoice(false, Color.red);
             grid.Clickable = false;
             grid.MyceliumSelect = null;
-            Human inOccupied = grid.Standing.GetComponent(typeof(Human)) as Human;
-            inOccupied.Clickable = true;
+            if(grid.Standing.GetComponent<Human>() != null) {
+                Human inOccupied = grid.Standing.GetComponent(typeof(Human)) as Human;
+                inOccupied.Clickable = true;
+            } else if(grid.Standing.GetComponent<Settlement>() != null) {
+                Settlement inOccupied = grid.Standing.GetComponent(typeof(Settlement)) as Settlement;
+                inOccupied.Clickable = true;
+            }
         }
 
         // Re-initialize
@@ -201,13 +239,19 @@ public class Mycelium : MonoBehaviour
 
     public void Damage() {
         Debug.Log("Mycelium Hit!!!");
-        currHealth -= 5;
+        currHealth -= 9; // Change this to 10! Just need reference right now
+        _healthbar.UpdateHealthBar(maxHealth, currHealth);
         Debug.Log(currHealth);
     }
 
     // The following will toggle the mycelium highlight
     void OnMouseOver()
     {
+        _healthbar.ToggleView(true); // show the health bar
+        // Don't do anything if it's not the player's turn + if humans still moving
+        if(!(GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()))
+            return;
+
         if(GameManager.Instance.PlayerTurn){
             if(!highlighting && !selected) {
                 highlighting = true;
@@ -218,6 +262,12 @@ public class Mycelium : MonoBehaviour
     
     void OnMouseExit()
     {
+        _healthbar.ToggleView(false); // hide the health bar
+
+        // Don't do anything if it's not the player's turn + if humans still moving
+        if(!(GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()))
+            return;
+
         if(GameManager.Instance.PlayerTurn){
             if(highlighting && !selected) {
                 highlighting = false;
@@ -229,6 +279,10 @@ public class Mycelium : MonoBehaviour
 
     void OnMouseDown()
     {
+        // Don't do anything if it's not the player's turn + if humans still moving
+        if(!(GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()))
+            return;
+
         if(GameManager.Instance.PlayerTurn){
             // our object is being selected
             if (!selected) {
@@ -271,20 +325,26 @@ public class Mycelium : MonoBehaviour
                     grid.MyceliumSelect = this;
                 }
 
-                // NOTE: Settlements are clickable, make sure to get them as well!
                 foreach(GridNode grid in occupiedGrids) {
                     grid.GridHighlight.ToggleHighlightChoice(true, Color.red);
                     grid.Clickable = true;
                     grid.MyceliumSelect = this;
-                    Human inOccupied = grid.Standing.GetComponent(typeof(Human)) as Human;
-                    inOccupied.Clickable = true;
+                    if(grid.Standing.GetComponent<Human>() != null) {
+                        Human inOccupied = grid.Standing.GetComponent(typeof(Human)) as Human;
+                        inOccupied.Clickable = true;
+                    } else if(grid.Standing.GetComponent<Settlement>() != null) {
+                        Settlement inOccupied = grid.Standing.GetComponent(typeof(Settlement)) as Settlement;
+                        inOccupied.Clickable = true;
+                    }
                 }
 
                 Debug.Log("selected!");
                 selected = true;
                 mycHighlight.ToggleHighlight(true);
+                UIManager.Instance.EnableAndUpdateGameWheel();
             } else { // our object is being deselected
                 Reset();
+                UIManager.Instance.DisableGameWheel();
             }
         }
     }

@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     public Dictionary<int, Settlement> _SettlementGroup;
     public int _SettlementCount;
     
-    private int maxActionPoionts = 22;
+    private int maxActionPoionts = 15;
     private int currActionPoints;
 
     private Mycelium isSelecting; // Can't select multiple Mycelium at once!
@@ -276,6 +276,8 @@ public class GameManager : MonoBehaviour
         //SpawnManager.Instance.Spawn(26, 26, "Myc");
         SpawnManager.Instance.Spawn(22, 24, "Hum");
         SpawnManager.Instance.Spawn(25, 26, "Settlement");
+
+        UIManager.Instance.EndTurnButton(true);
     }
 
     // Update is called once per frame
@@ -309,7 +311,7 @@ public class GameManager : MonoBehaviour
     }
 
     // May be a good idea to make this a coroutine -- deactivate player input and wait for animations to finish!
-    public void advanceTurn() {
+    public void AdvanceTurn() {
         // Change the turn and set to opposing action points
         isPlayerTurn =! isPlayerTurn; // THIS NEEDS TO HAPPEN
         currActionPoints = maxActionPoionts;
@@ -327,14 +329,16 @@ public class GameManager : MonoBehaviour
 
         // Every Settlement attempts to spawn a human! Only do this on the human turn!
         if (!isPlayerTurn) {
+
+            UIManager.Instance.EndTurnButton(false); // taking advantage of the if-statement to disable end-turn button
             
             // If Settlement spawns a human, reset the chance back to 10%
             foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
                 elem.Value.SpawnHuman();
             }
 
-            _settlementSpawnChance += 0.05f; // Increase chance of settlement spawning human per turn
-        }
+            _settlementSpawnChance += 0.15f; // Increase chance of settlement spawning human per turn (by a percent)
+        } 
 
         // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
         CountInSpecialBiome();

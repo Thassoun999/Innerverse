@@ -12,7 +12,7 @@ public class EndTurn : Node
             return NodeState.FAILURE;
             
         // End your turn here!
-        GameManager.Instance.advanceTurn();
+        GameManager.Instance.AdvanceTurn();
 
         // Clearing all the data
         ClearData("Scan Ratio");

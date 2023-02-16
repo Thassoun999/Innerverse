@@ -11,6 +11,7 @@ public class Settlement : MonoBehaviour
 
     private int maxHealth = 35;
     public int currHealth;
+    [SerializeField] private HealthBar _healthbar;
 
     private Highlight setHighlight;
 
@@ -77,6 +78,9 @@ public class Settlement : MonoBehaviour
         int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
 
         GameManager.Instance.SettlementBuilt[biomeSpec] = 1;
+
+        // Set the healthbar to max
+        _healthbar.UpdateHealthBar(maxHealth, currHealth);
     }
 
     void Update()
@@ -114,7 +118,27 @@ public class Settlement : MonoBehaviour
     public void Damage() {
         Debug.Log("Settlement Hit!!!");
         currHealth -= 5;
+
+        // Set the healthbar to max
+        _healthbar.UpdateHealthBar(maxHealth, currHealth);
         Debug.Log(currHealth);
+    }
+
+    void OnMouseOver() 
+    {
+        _healthbar.ToggleView(true); // show the health bar
+    }
+
+    void OnMouseExit() {
+        _healthbar.ToggleView(false); // hide the health bar
+    }
+
+    // Code also applies to settlements
+    void OnMouseDown() {
+        if (clickable) {
+            // If we are selected, we need to make sure the grid we are standing on is the one being selected instead
+            GameManager.Instance.CoordsToGridNode[(row, col)].OnMouseDownHumCall();
+        }
     }
 
 

@@ -11,6 +11,7 @@ public class Human : MonoBehaviour
     private int col;
     private int maxHealth = 10;
     public int currHealth;
+    [SerializeField] private HealthBar _healthbar;
 
     private Highlight humHighlight;
 
@@ -99,6 +100,9 @@ public class Human : MonoBehaviour
         walking = false;
         moveActivated = false;
         attackTime = false;
+
+        // Set the healthbar to max
+        _healthbar.UpdateHealthBar(maxHealth, currHealth);
     }
 
     void OnDestroy()
@@ -207,6 +211,14 @@ public class Human : MonoBehaviour
     public void Damage() {
         Debug.Log("Human hit!!!");
         currHealth -= 5;
+        _healthbar.UpdateHealthBar(maxHealth, currHealth);
+        Debug.Log(currHealth);
+    }
+
+    public void MiniDamange() {
+        Debug.Log("Human backfire!");
+        currHealth -= 3;
+        _healthbar.UpdateHealthBar(maxHealth, currHealth);
         Debug.Log(currHealth);
     }
 
@@ -216,6 +228,21 @@ public class Human : MonoBehaviour
             tempMyc.Damage();
             attackTime = false;
         }
+
+        // Take thorns damage if Mycelium unlocked power of special biome 2!
+        if(GameManager.Instance.MyceliumCountBiome2 > 0) {
+            MiniDamange();
+        }
+
+    }
+
+    void OnMouseOver() 
+    {
+        _healthbar.ToggleView(true); // show the health bar
+    }
+
+    void OnMouseExit() {
+        _healthbar.ToggleView(false); // hide the health bar
     }
 
     void OnMouseDown() {
