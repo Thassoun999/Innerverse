@@ -108,6 +108,9 @@ public class GridNode : MonoBehaviour {
                 selected = true;
                 gridHighlight.ToggleHighlightChoice(true, Color.blue);
 
+                // Update game wheel here too on grid selection
+                UIManager.Instance.EnableAndUpdateGameWheel();
+
             } else {
                 // Disallow Mycelium from selecting an action and clear the coordinates it has previously received
                 myceliumSelect.GridSelect = null;
@@ -120,6 +123,9 @@ public class GridNode : MonoBehaviour {
                     GridHighlight.ToggleHighlightChoice(true, Color.red);
 
                 }
+
+                // Update game wheel here too on grid selection
+                UIManager.Instance.EnableAndUpdateGameWheel();
             }
         }
     }
@@ -145,6 +151,9 @@ public class GridNode : MonoBehaviour {
                 selected = true;
                 gridHighlight.ToggleHighlightChoice(true, Color.blue);
 
+                // Update game wheel here too on grid selection
+                UIManager.Instance.EnableAndUpdateGameWheel();
+
             } else {
                 // Disallow Mycelium from selecting an action and clear the coordinates it has previously received
                 myceliumSelect.GridSelect = null;
@@ -157,6 +166,9 @@ public class GridNode : MonoBehaviour {
                     GridHighlight.ToggleHighlightChoice(true, Color.red);
 
                 }
+
+                // Update game wheel here too on grid selection
+                UIManager.Instance.EnableAndUpdateGameWheel();
             }
         }
     }
