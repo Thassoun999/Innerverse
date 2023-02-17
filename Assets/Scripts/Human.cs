@@ -13,8 +13,6 @@ public class Human : MonoBehaviour
     public int currHealth;
     [SerializeField] private HealthBar _healthbar;
 
-    private Highlight humHighlight;
-
     private bool clickable;
     private bool selected;
 
@@ -80,7 +78,6 @@ public class Human : MonoBehaviour
     // Awake is called before the game starts -- use this to set up references (does not need to be enabled)
     void Awake()
     {
-        humHighlight = gameObject.GetComponent<Highlight>();
     }
 
     // Start is called before the first frame update (script is enabled)
@@ -145,12 +142,26 @@ public class Human : MonoBehaviour
                 Vector3 adjustedDestPos = new Vector3(currNode.gameObject.transform.localPosition.x, 0, currNode.gameObject.transform.localPosition.z);
                 recordedDistanceToNode = Vector3.Distance(adjustedAgentPos, adjustedDestPos);
 
-                gameObject.transform.localPosition = Vector3.SmoothDamp(
+                Vector3 directionAndMovement = Vector3.SmoothDamp(
                     gameObject.transform.localPosition,
                     currTarget,
                     ref velocity,
                     0.3f
                 );
+
+                gameObject.transform.localPosition = directionAndMovement;
+
+                // Rotate target towards Obj
+                var lookPos = currTarget - gameObject.transform.localPosition;
+                lookPos.x = 0.0f;
+                lookPos.z = 0.0f;
+                var rotation = Quaternion.LookRotation(lookPos);
+                gameObject.transform.Find("Plane").gameObject.transform.rotation = Quaternion.Slerp(
+                    gameObject.transform.Find("Plane").gameObject.transform.rotation,
+                    rotation,
+                    Time.deltaTime
+                );
+                
             } else { // walking done, need to solidify the value of our human
                 int[] currNodeCoords = currNode.Coordinates;
 

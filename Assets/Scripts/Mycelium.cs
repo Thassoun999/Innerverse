@@ -156,6 +156,10 @@ public class Mycelium : MonoBehaviour
             toAttack.Damage();
         }
         GameManager.Instance.ActionPoints -= 6;
+        // Play Grid Animation
+        if(gridSelect.GridAnimator != null) {
+            gridSelect.GridAnimator.SetTrigger("MycAttack");
+        }
         Reset();
         UIManager.Instance.DisableGameWheel();
     }

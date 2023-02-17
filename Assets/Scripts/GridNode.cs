@@ -22,9 +22,20 @@ public class GridNode : MonoBehaviour {
     // Special Grid properties
     public int specialClassifier = 0; // Default to 0, 1 for biome 1, 2 for biome 2
 
+    // Animator Controller
+    private Animator _GridAnimator;
+
+    // ~ Properties ~
+
     public int[] Coordinates {
         get {
             return new int[] {row, col};
+        }
+    }
+
+    public Animator GridAnimator {
+        get {
+            return _GridAnimator;
         }
     }
 
@@ -87,6 +98,8 @@ public class GridNode : MonoBehaviour {
     {
         row = (int)transform.localPosition.x;
         col = (int)transform.localPosition.z;
+
+        _GridAnimator = GetComponent<Animator>();
     }
 
     void OnMouseDown()

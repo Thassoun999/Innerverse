@@ -274,7 +274,8 @@ public class GameManager : MonoBehaviour
         // Spawn Human very closeby
         SpawnManager.Instance.Spawn(5, 4, "Myc");
         //SpawnManager.Instance.Spawn(26, 26, "Myc");
-        SpawnManager.Instance.Spawn(22, 24, "Hum");
+        // SpawnManager.Instance.Spawn(22, 24, "Hum");
+        SpawnManager.Instance.Spawn(7, 4, "Hum");
         SpawnManager.Instance.Spawn(25, 26, "Settlement");
 
         UIManager.Instance.EndTurnButton(true);
