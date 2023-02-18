@@ -13,7 +13,7 @@ public class Human : MonoBehaviour
     public int currHealth;
     [SerializeField] private HealthBar _healthbar;
 
-    private bool clickable;
+    public bool clickable;
     private bool selected;
 
     // Walking varaibles for movement algorithm
@@ -104,6 +104,7 @@ public class Human : MonoBehaviour
 
     void OnDestroy()
     {
+        GameManager.Instance.CoordsToGridNode[(row, col)].GridAnimator.SetTrigger("HumAttack"); // The truck explodes!
         GameManager.Instance.removeHuman(this.gameObject.GetInstanceID());
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
@@ -149,19 +150,7 @@ public class Human : MonoBehaviour
                     0.3f
                 );
 
-                gameObject.transform.localPosition = directionAndMovement;
-
-                // Rotate target towards Obj
-                var lookPos = currTarget - gameObject.transform.localPosition;
-                lookPos.x = 0.0f;
-                lookPos.z = 0.0f;
-                var rotation = Quaternion.LookRotation(lookPos);
-                gameObject.transform.Find("Plane").gameObject.transform.rotation = Quaternion.Slerp(
-                    gameObject.transform.Find("Plane").gameObject.transform.rotation,
-                    rotation,
-                    Time.deltaTime
-                );
-                
+                gameObject.transform.localPosition = directionAndMovement; // moving
             } else { // walking done, need to solidify the value of our human
                 int[] currNodeCoords = currNode.Coordinates;
 
@@ -236,6 +225,8 @@ public class Human : MonoBehaviour
     public void Attack() {
         Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].Standing.GetComponent(typeof(Mycelium)) as Mycelium;
         if(tempMyc) {
+            // Grid Explosion Animation
+            GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].GridAnimator.SetTrigger("HumAttack");
             tempMyc.Damage();
             attackTime = false;
         }
@@ -257,6 +248,7 @@ public class Human : MonoBehaviour
     }
 
     void OnMouseDown() {
+        Debug.Log("CLIRNEOSGNBSUIOERBGIUESR");
         if (clickable) {
             // If we are selected, we need to make sure the grid we are standing on is the one being selected instead
             GameManager.Instance.CoordsToGridNode[(row, col)].OnMouseDownHumCall();

@@ -13,13 +13,13 @@ public class HealthBar : MonoBehaviour
 
     void Awake()
     {
-        _healthbarCanvas = gameObject;
-        _healthbarCanvas.SetActive(false);
     }
 
     void Start() 
     {
         _cam = Camera.main;
+        _healthbarCanvas = gameObject;
+        _healthbarCanvas.SetActive(false);
     }
 
     void Update()
