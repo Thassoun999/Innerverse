@@ -7,8 +7,8 @@ public class Human : MonoBehaviour
 
     // ~ Instances and Variables ~
 
-    private int row;
-    private int col;
+    private int row = -1;
+    private int col = -1;
     private int maxHealth = 10;
     public int currHealth;
     [SerializeField] private HealthBar _healthbar;

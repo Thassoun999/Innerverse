@@ -17,6 +17,7 @@ public class Settlement : MonoBehaviour
 
     private bool clickable;
     private bool selected;
+    private bool spawnTime = false;
 
     // ~ Properties ~
 
@@ -45,6 +46,15 @@ public class Settlement : MonoBehaviour
         }
     }
 
+    public bool SpawnTime {
+        get {
+            return spawnTime;
+        }
+        set {
+            spawnTime = value;
+        }
+    }
+
     // ~ Methods ~ 
     void Awake()
     {
@@ -68,6 +78,8 @@ public class Settlement : MonoBehaviour
         row = (int)transform.localPosition.x;
         col = (int)transform.localPosition.z;
 
+        spawnTime = false;
+
         // Set grid we are standing on to occupied
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 3; // set to Settlement
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = gameObject;
@@ -88,9 +100,14 @@ public class Settlement : MonoBehaviour
         if (currHealth <= 0)
             Destroy(gameObject);
 
+        if(spawnTime) {
+            spawnTime = false;
+            spawnHuman();
+        }
+
     }
 
-    public void SpawnHuman() {
+    void spawnHuman() {
         float randVal = Random.Range(0.0f, 1.0f);
 
         // If this works then the random chance worked!!! Spawn a human!
@@ -105,6 +122,15 @@ public class Settlement : MonoBehaviour
 
                     if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 0) {
                         GameManager.Instance.SettlementSpawnChance = 0.1f;
+                        int pos1 = row + i;
+                        int pos2 = col + j;
+                        int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
+                        if(pos1 == 0 && pos2 == 0) {
+                            Debug.Log("ALARM");
+                        }
+                        Debug.Log("row: " + pos1);
+                        Debug.Log("col: " + pos2);
+                        Debug.Log("biomeSpec: " + biomeSpec);
                         SpawnManager.Instance.Spawn(row + i, col + j, "Hum");
 
                         return; // leave immediately after spawning a guy in
