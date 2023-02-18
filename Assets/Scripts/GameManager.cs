@@ -314,7 +314,6 @@ public class GameManager : MonoBehaviour
     // May be a good idea to make this a coroutine -- deactivate player input and wait for animations to finish!
     public void AdvanceTurn() {
         // Change the turn and set to opposing action points
-        isPlayerTurn =! isPlayerTurn; // THIS NEEDS TO HAPPEN
         currActionPoints = maxActionPoionts;
 
         // But keep input disabled until all animations are done! 
@@ -329,7 +328,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Every Settlement attempts to spawn a human! Only do this on the human turn!
-        if (!isPlayerTurn) {
+        if (isPlayerTurn) { // reason we're doing if true here is because this is the end of the player turn, changing everything at the end
 
             UIManager.Instance.EndTurnButton(false); // taking advantage of the if-statement to disable end-turn button
             
@@ -343,7 +342,7 @@ public class GameManager : MonoBehaviour
 
         // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
         CountInSpecialBiome();
-
+        isPlayerTurn =! isPlayerTurn; 
         return;
     }
 

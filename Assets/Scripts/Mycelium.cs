@@ -194,7 +194,7 @@ public class Mycelium : MonoBehaviour
         reinforced = true;
         currHealth += 5;
         GameManager.Instance.ActionPoints -= 3;
-        
+
         // Spawn the two reinforce mushrooms and they will play their spawn animation
         _ReinforcementMushrooms[0].SetActive(true);
         _ReinforcementMushrooms[1].SetActive(true);
@@ -374,7 +374,6 @@ public class Mycelium : MonoBehaviour
                     }
                 }
 
-                Debug.Log("selected!");
                 selected = true;
                 mycHighlight.ToggleHighlight(true);
                 UIManager.Instance.EnableAndUpdateGameWheel();

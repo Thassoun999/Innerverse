@@ -13,6 +13,7 @@ public class ScanSurroundings : Node
 
         Dictionary<int, Mycelium> tempMycRecord = new Dictionary<int, Mycelium>(); // keep track of all of our Mycelium we have already counted over
 
+        Debug.Log("Surrounding Scan");
         // Look for Mycelium in range, get the total count per Mycelium (make sure we aren't double counting)
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;
@@ -38,7 +39,7 @@ public class ScanSurroundings : Node
 
         parent.parent.SetData("Mycelium Dict", tempMycRecord);
 
-        if(tempMycRecord.Count > 0) {
+        if(tempMycRecord.Count > 0) { // don't divide by 0
             float _HumanToMyceliumRatio = (float)GameManager.Instance._HumanCount / (float)tempMycRecord.Count;
 
             parent.parent.SetData("Scan Ratio", _HumanToMyceliumRatio);

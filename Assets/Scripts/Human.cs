@@ -248,7 +248,6 @@ public class Human : MonoBehaviour
     }
 
     void OnMouseDown() {
-        Debug.Log("CLIRNEOSGNBSUIOERBGIUESR");
         if (clickable) {
             // If we are selected, we need to make sure the grid we are standing on is the one being selected instead
             GameManager.Instance.CoordsToGridNode[(row, col)].OnMouseDownHumCall();
