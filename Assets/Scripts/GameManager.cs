@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
     public int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
 
     private string humanAction;
+
+    [SerializeField] private HumanBTree _EnemyAIManager;
     
     // ~ Properties ~
 
@@ -284,6 +286,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Play the Enemy's Turn
+        if(!isPlayerTurn) {
+            _EnemyAIManager.Evaluate();
+        }
+        
         // WIN-LOSE Conditions!
 
         // CHECK 1 -- Check to see if one side has a count of 0, the other side wins
@@ -327,14 +334,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Every Settlement attempts to spawn a human! Only do this on the human turn!
-        if (isPlayerTurn) { // reason we're doing if true here is because this is the end of the player turn, changing everything at the end
+        // Every Settlement attempts to spawn a human! Only do this at the end of the human turn!
+        if (!isPlayerTurn) {
 
             UIManager.Instance.EndTurnButton(false); // taking advantage of the if-statement to disable end-turn button
             
             // If Settlement spawns a human, reset the chance back to 10%
             foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
-                elem.Value.SpawnHuman();
+                elem.Value.SpawnTime = true; // will spawn on next Settlement update!
             }
 
             _settlementSpawnChance += 0.15f; // Increase chance of settlement spawning human per turn (by a percent)
@@ -342,7 +349,9 @@ public class GameManager : MonoBehaviour
 
         // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
         CountInSpecialBiome();
-        isPlayerTurn =! isPlayerTurn; 
+
+        isPlayerTurn =! isPlayerTurn; // THIS NEEDS TO HAPPEN
+
         return;
     }
 

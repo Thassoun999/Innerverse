@@ -14,10 +14,18 @@ namespace BehaviorTree
             _root = SetupTree();
         }
 
+        /*
         void Update()
         {
             if (_root != null && !GameManager.Instance.PlayerTurn)
             {
+                _root.Evaluate();
+            }
+        }
+        */
+        public void Evaluate() 
+        {   
+            if(_root != null) {
                 _root.Evaluate();
             }
         }
