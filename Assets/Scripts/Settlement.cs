@@ -133,7 +133,7 @@ public class Settlement : MonoBehaviour
                         continue;
 
                     if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 0) {
-                        GameManager.Instance.SettlementSpawnChance = 0.1f;
+                        GameManager.Instance.SettlementSpawnChance = 0.2f;
                         SpawnManager.Instance.Spawn(row + i, col + j, "Hum");
 
                         return; // leave immediately after spawning a guy in

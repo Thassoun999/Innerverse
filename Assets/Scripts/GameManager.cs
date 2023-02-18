@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     // (29; 0) Special Biome 2
     // (0; 29) Special Biome 1
 
-    private float _settlementSpawnChance = 0.1f;
+    private float _settlementSpawnChance = 0.2f;
 
     public int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
 
@@ -345,7 +345,7 @@ public class GameManager : MonoBehaviour
                 elem.Value.SpawnTime = true; // will spawn on next Settlement update!
             }
 
-            _settlementSpawnChance += 0.15f; // Increase chance of settlement spawning human per turn (by a percent)
+            _settlementSpawnChance += 0.20f; // Increase chance of settlement spawning human per turn (by a percent)
         } 
 
         // go through grids and check to see how many humans and mycelium are on each biome 1 and 2
