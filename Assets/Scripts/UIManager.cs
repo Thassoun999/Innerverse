@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] public float alphaThreshold = 0.1f;
     public GameObject ActionBar; // 15 bars (the mushroom being the last bar!)
     public GameObject GameWheel;
+    public GameObject ThornsIcon;
     private bool _GameWheelEnable;
     private Dictionary<string, GameObject> _GameWheelItems;
 
@@ -70,6 +71,13 @@ public class UIManager : MonoBehaviour
 
         // Update how many action points we have left
         ActionBar.GetComponent<Image>().fillAmount = actionBarFillAmount[GameManager.Instance.ActionPoints];
+
+        // Inform the player if they have the thorns passive or not
+        if(GameManager.Instance.MyceliumCountBiome2 > 0) {
+            ThornsIcon.GetComponent<Image>().color = new Color(1.0f, 0.53f, 0.76f, 1.0f);
+        } else {
+            ThornsIcon.GetComponent<Image>().color = new Color(0.0f, 0.0f, 0.0f, .7f);
+        }
     }
 
     // Call this when selecting a Mycelium (also works for updating game wheel)

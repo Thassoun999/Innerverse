@@ -334,11 +334,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Every Settlement attempts to spawn a human! Only do this at the end of the human turn!
-        if (!isPlayerTurn) {
+        if(isPlayerTurn) { // End of player turn -- turn off the button
+            UIManager.Instance.EndTurnButton(false); 
+        }
 
-            UIManager.Instance.EndTurnButton(false); // taking advantage of the if-statement to disable end-turn button
-            
+        // Every Settlement attempts to spawn a human! Only do this at the end of the human turn!
+        if (!isPlayerTurn) {            
             // If Settlement spawns a human, reset the chance back to 10%
             foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
                 elem.Value.SpawnTime = true; // will spawn on next Settlement update!

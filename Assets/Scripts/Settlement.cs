@@ -18,6 +18,7 @@ public class Settlement : MonoBehaviour
     private bool clickable;
     private bool selected;
     private bool spawnTime = false;
+    private bool dying = false;
 
     // ~ Properties ~
 
@@ -91,18 +92,29 @@ public class Settlement : MonoBehaviour
 
         GameManager.Instance.SettlementBuilt[biomeSpec] = 1;
 
+        dying = false;
+
         // Set the healthbar to max
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
     }
 
+    void DestroySettlement() {
+        Destroy(gameObject);
+    }
+
     void Update()
     {
-        if (currHealth <= 0)
-            Destroy(gameObject);
+        if (currHealth <= 0 && !dying) {
+            dying = true;
+            gameObject.GetComponent<Animator>().SetTrigger("Death");
+        }
 
         if(spawnTime) {
             spawnTime = false;
-            spawnHuman();
+
+            // Cap the total number of humans to be spawned! Only want less than 20 to allow a spawn
+            if(GameManager.Instance._HumanCount < 20)
+                spawnHuman();
         }
 
     }
@@ -122,15 +134,6 @@ public class Settlement : MonoBehaviour
 
                     if(GameManager.Instance.CoordsToGridNode[(row + i, col + j)].Occupation == 0) {
                         GameManager.Instance.SettlementSpawnChance = 0.1f;
-                        int pos1 = row + i;
-                        int pos2 = col + j;
-                        int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
-                        if(pos1 == 0 && pos2 == 0) {
-                            Debug.Log("ALARM");
-                        }
-                        Debug.Log("row: " + pos1);
-                        Debug.Log("col: " + pos2);
-                        Debug.Log("biomeSpec: " + biomeSpec);
                         SpawnManager.Instance.Spawn(row + i, col + j, "Hum");
 
                         return; // leave immediately after spawning a guy in

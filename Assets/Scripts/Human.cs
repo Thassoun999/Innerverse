@@ -31,6 +31,7 @@ public class Human : MonoBehaviour
     // Attacking parameters
     private int[] attackingCoords;
     private bool attackTime;
+    private bool dying = false;
 
     // ~ Properties ~
     public int[] Coordinates{
@@ -98,25 +99,33 @@ public class Human : MonoBehaviour
         moveActivated = false;
         attackTime = false;
 
+        dying = false;
+
         // Set the healthbar to max
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
     }
 
     void OnDestroy()
     {
-        GameManager.Instance.CoordsToGridNode[(row, col)].GridAnimator.SetTrigger("HumAttack"); // The truck explodes!
         GameManager.Instance.removeHuman(this.gameObject.GetInstanceID());
         GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
         GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
 
     }
 
+    void DestroyHuman()
+    {
+        Destroy(gameObject); // will execute at the event key at the end of our death animation
+    }
+
     // Update is called once per frame
 
     void Update()
     {
-        if (currHealth <= 0)
-            Destroy(gameObject);
+        if (currHealth <= 0 && !dying) { // this can only happen once
+            dying = true;
+            gameObject.GetComponent<Animator>().SetTrigger("Death");
+        }
 
         // Walking animation -- this needs to be changed into a forloop
         if(moveActivated) {

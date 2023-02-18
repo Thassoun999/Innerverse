@@ -115,7 +115,6 @@ public class Conquer : Node
             }
         }
 
-        Debug.Log("job done");
         return NodeState.SUCCESS;
 
     }
