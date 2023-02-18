@@ -145,12 +145,10 @@ public class Settlement : MonoBehaviour
     }
 
     public void Damage() {
-        Debug.Log("Settlement Hit!!!");
         currHealth -= 5;
 
         // Set the healthbar to max
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
-        Debug.Log(currHealth);
     }
 
     void OnMouseOver() 

@@ -13,7 +13,6 @@ public class ScanSurroundings : Node
 
         Dictionary<int, Mycelium> tempMycRecord = new Dictionary<int, Mycelium>(); // keep track of all of our Mycelium we have already counted over
 
-        Debug.Log("Surrounding Scan");
         // Look for Mycelium in range, get the total count per Mycelium (make sure we aren't double counting)
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;

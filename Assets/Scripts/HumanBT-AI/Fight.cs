@@ -20,8 +20,6 @@ public class Fight : Node
             return NodeState.FAILURE;
         }
 
-        Debug.Log("Fight Time!");
-
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;
             int[] tempHumanCoords = tempHum.Coordinates;

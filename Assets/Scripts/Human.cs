@@ -218,17 +218,13 @@ public class Human : MonoBehaviour
     }
 
     public void Damage() {
-        Debug.Log("Human hit!!!");
         currHealth -= 5;
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
-        Debug.Log(currHealth);
     }
 
     public void MiniDamange() {
-        Debug.Log("Human backfire!");
         currHealth -= 3;
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
-        Debug.Log(currHealth);
     }
 
     public void Attack() {

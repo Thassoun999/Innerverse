@@ -29,8 +29,6 @@ public class Conquer : Node
         int[] specialBiome1EdgeCoords = new int[] {0, 29};
         int[] specialBiome2EdgeCoords = new int[] {29, 0};
 
-        Debug.Log("Conquer Time!");
-
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;
             int[] tempHumanCoords = tempHum.Coordinates;
@@ -60,7 +58,6 @@ public class Conquer : Node
 
             // Don't just check for distance but also check if that settlement has already been conquered or not (TO WORK ON)
             if(strategyOption == "Conquer2") {
-                Debug.Log("Conquer Option Biome 2");
                 // Go to Biome 2 (shorter distance)
                 float shortestDistance = 1000000.0f;
                 // Find a node that is unoccupied, of the biome type, and the closest to our Human
@@ -87,7 +84,6 @@ public class Conquer : Node
                 Move(path, ref tempHum);
 
             } else if (strategyOption == "Conquer1") {
-                Debug.Log("Conquer Option Biome 1");
                 // Go to Biome 1 (shorter distance)
                 float shortestDistance = 1000000.0f;
                 // Find a node that is unoccupied, of the biome type, and the closest to our Human
