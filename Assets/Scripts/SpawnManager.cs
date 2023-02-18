@@ -42,24 +42,33 @@ public class SpawnManager : MonoBehaviour
         float rowFloat = (float)row;
         float colFloat = (float)col;
         Vector3 position = new Vector3(rowFloat, 1.0f, colFloat);
-        GameObject temp;
+        GameObject tempPar;
 
-        // Spawning
+        // In order 
+        // Create parent -> Affect child local position
+
+        // Spawning -- Get the child
         if (spawnSpecification == "Myc"){
-            temp = GameObject.Instantiate(_MycSpawn, position, transform.rotation);
+            tempPar = GameObject.Instantiate(_MycSpawn, _MycSpawn.transform.position, transform.rotation);
+            GameObject temp = tempPar.transform.GetChild(0).gameObject;
+            temp.transform.localPosition = position;
 
             Mycelium tempMyc = temp.GetComponent(typeof(Mycelium)) as Mycelium;
             GameManager.Instance.addMycelium(ref tempMyc);
     
         }
         else if (spawnSpecification == "Hum"){
-            temp = GameObject.Instantiate(_HumSpawn, position, transform.rotation);
+            tempPar = GameObject.Instantiate(_HumSpawn, _HumSpawn.transform.position, _HumSpawn.transform.rotation);
+            GameObject temp = tempPar.transform.GetChild(0).gameObject;
+            temp.transform.localPosition = position;
             
             Human tempHum = temp.GetComponent(typeof(Human)) as Human;
             GameManager.Instance.addHuman(ref tempHum);
 
         } else if (spawnSpecification == "Settlement") {
-            temp = GameObject.Instantiate(_Settlement, position, transform.rotation);
+            tempPar = GameObject.Instantiate(_Settlement, _Settlement.transform.position, transform.rotation);
+            GameObject temp = tempPar.transform.GetChild(0).gameObject;
+            temp.transform.localPosition = position;
             
             Settlement tempSet = temp.GetComponent(typeof(Settlement)) as Settlement;
             GameManager.Instance.addSettlement(ref tempSet);

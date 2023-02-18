@@ -8,8 +8,6 @@ public class Wander : Node
 {
     public override NodeState Evaluate()
     {
-        Debug.Log("Wander Time!");
-
         // Nothing is around us and there isn't anything to conquer, just wander and scan for next turn
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;

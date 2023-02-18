@@ -13,9 +13,7 @@ public class Human : MonoBehaviour
     public int currHealth;
     [SerializeField] private HealthBar _healthbar;
 
-    private Highlight humHighlight;
-
-    private bool clickable;
+    public bool clickable;
     private bool selected;
 
     // Walking varaibles for movement algorithm
@@ -33,6 +31,7 @@ public class Human : MonoBehaviour
     // Attacking parameters
     private int[] attackingCoords;
     private bool attackTime;
+    private bool dying = false;
 
     // ~ Properties ~
     public int[] Coordinates{
@@ -80,7 +79,6 @@ public class Human : MonoBehaviour
     // Awake is called before the game starts -- use this to set up references (does not need to be enabled)
     void Awake()
     {
-        humHighlight = gameObject.GetComponent<Highlight>();
     }
 
     // Start is called before the first frame update (script is enabled)
@@ -101,6 +99,8 @@ public class Human : MonoBehaviour
         moveActivated = false;
         attackTime = false;
 
+        dying = false;
+
         // Set the healthbar to max
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
     }
@@ -113,12 +113,19 @@ public class Human : MonoBehaviour
 
     }
 
+    void DestroyHuman()
+    {
+        Destroy(gameObject); // will execute at the event key at the end of our death animation
+    }
+
     // Update is called once per frame
 
     void Update()
     {
-        if (currHealth <= 0)
-            Destroy(gameObject);
+        if (currHealth <= 0 && !dying) { // this can only happen once
+            dying = true;
+            gameObject.GetComponent<Animator>().SetTrigger("Death");
+        }
 
         // Walking animation -- this needs to be changed into a forloop
         if(moveActivated) {
@@ -145,12 +152,14 @@ public class Human : MonoBehaviour
                 Vector3 adjustedDestPos = new Vector3(currNode.gameObject.transform.localPosition.x, 0, currNode.gameObject.transform.localPosition.z);
                 recordedDistanceToNode = Vector3.Distance(adjustedAgentPos, adjustedDestPos);
 
-                gameObject.transform.localPosition = Vector3.SmoothDamp(
+                Vector3 directionAndMovement = Vector3.SmoothDamp(
                     gameObject.transform.localPosition,
                     currTarget,
                     ref velocity,
                     0.3f
                 );
+
+                gameObject.transform.localPosition = directionAndMovement; // moving
             } else { // walking done, need to solidify the value of our human
                 int[] currNodeCoords = currNode.Coordinates;
 
@@ -209,22 +218,20 @@ public class Human : MonoBehaviour
     }
 
     public void Damage() {
-        Debug.Log("Human hit!!!");
         currHealth -= 5;
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
-        Debug.Log(currHealth);
     }
 
     public void MiniDamange() {
-        Debug.Log("Human backfire!");
         currHealth -= 3;
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
-        Debug.Log(currHealth);
     }
 
     public void Attack() {
         Mycelium tempMyc = GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].Standing.GetComponent(typeof(Mycelium)) as Mycelium;
         if(tempMyc) {
+            // Grid Explosion Animation
+            GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].GridAnimator.SetTrigger("HumAttack");
             tempMyc.Damage();
             attackTime = false;
         }

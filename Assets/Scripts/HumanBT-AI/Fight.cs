@@ -20,8 +20,6 @@ public class Fight : Node
             return NodeState.FAILURE;
         }
 
-        Debug.Log("Fight Time!");
-
         foreach(KeyValuePair<int, Human> elem in GameManager.Instance.HumanGroup) {
             Human tempHum = elem.Value;
             int[] tempHumanCoords = tempHum.Coordinates;
@@ -99,11 +97,9 @@ public class Fight : Node
 
         if (path.Count == 0 || path == null) {
             // path can't be set, just set the target and attack!
-            Debug.Log("no move");
             agentToMove.SetTarget(mycAttackCoords);
             agentToMove.Attack();
         } else {
-            Debug.Log("move");
             agentToMove.SetTarget(mycAttackCoords);
             agentToMove.SetPath(ref path); // attacking occurs here when the path is finished being walked if target is set
         }

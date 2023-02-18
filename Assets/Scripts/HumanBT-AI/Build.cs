@@ -12,8 +12,6 @@ public class Build : Node
         if(GameManager.Instance.PlayerTurn)
             return NodeState.FAILURE;
 
-        Debug.Log("Build Time!");
-
         int[] buildCoords = GetData("BuildCoords") as int[];
         int biomeSpecification = (int)GetData("Biome");
 

@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour
     // (29; 0) Special Biome 2
     // (0; 29) Special Biome 1
 
-    private float _settlementSpawnChance = 0.1f;
+    private float _settlementSpawnChance = 0.2f;
 
     public int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
 
@@ -277,6 +277,7 @@ public class GameManager : MonoBehaviour
         SpawnManager.Instance.Spawn(5, 4, "Myc");
         //SpawnManager.Instance.Spawn(26, 26, "Myc");
         SpawnManager.Instance.Spawn(22, 24, "Hum");
+        //SpawnManager.Instance.Spawn(7, 4, "Hum");
         SpawnManager.Instance.Spawn(25, 26, "Settlement");
 
         UIManager.Instance.EndTurnButton(true);
@@ -333,17 +334,18 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // Every Settlement attempts to spawn a human! Only do this at the end of the human turn!
-        if (!isPlayerTurn) {
+        if(isPlayerTurn) { // End of player turn -- turn off the button
+            UIManager.Instance.EndTurnButton(false); 
+        }
 
-            UIManager.Instance.EndTurnButton(false); // taking advantage of the if-statement to disable end-turn button
-            
+        // Every Settlement attempts to spawn a human! Only do this at the end of the human turn!
+        if (!isPlayerTurn) {            
             // If Settlement spawns a human, reset the chance back to 10%
             foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
                 elem.Value.SpawnTime = true; // will spawn on next Settlement update!
             }
 
-            _settlementSpawnChance += 0.15f; // Increase chance of settlement spawning human per turn (by a percent)
+            _settlementSpawnChance += 0.20f; // Increase chance of settlement spawning human per turn (by a percent)
         } 
 
         // go through grids and check to see how many humans and mycelium are on each biome 1 and 2

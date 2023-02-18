@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] public float alphaThreshold = 0.1f;
     public GameObject ActionBar; // 15 bars (the mushroom being the last bar!)
     public GameObject GameWheel;
-    private bool _GameWheelEnable;
+    public GameObject ThornsIcon;
     private Dictionary<string, GameObject> _GameWheelItems;
 
     private float[] actionBarFillAmount = new float[] {0f, 0.335f, 0.382f, 0.429f, 0.48f, 0.527f, 0.574f, 0.621f, 0.669f, 0.716f, 0.764f, 0.815f, 0.858f, 0.909f, 0.957f, 1.0f};
@@ -56,9 +56,7 @@ public class UIManager : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        _GameWheelEnable = false;
-   
+    {   
         DisableGameWheel();
     }
 
@@ -70,6 +68,13 @@ public class UIManager : MonoBehaviour
 
         // Update how many action points we have left
         ActionBar.GetComponent<Image>().fillAmount = actionBarFillAmount[GameManager.Instance.ActionPoints];
+
+        // Inform the player if they have the thorns passive or not
+        if(GameManager.Instance.MyceliumCountBiome2 > 0) {
+            ThornsIcon.GetComponent<Image>().color = new Color(1.0f, 0.53f, 0.76f, 1.0f);
+        } else {
+            ThornsIcon.GetComponent<Image>().color = new Color(0.0f, 0.0f, 0.0f, .7f);
+        }
     }
 
     // Call this when selecting a Mycelium (also works for updating game wheel)
@@ -77,10 +82,6 @@ public class UIManager : MonoBehaviour
         // Don't enable the wheel if it's not your turn + if humans are still doing their animation
         if(!(GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()))
             return;
-
-
-        _GameWheelEnable = true;
-
 
         int currActionPoints = GameManager.Instance.ActionPoints;
         
@@ -118,7 +119,6 @@ public class UIManager : MonoBehaviour
     }
 
     public void DisableGameWheel() {
-        _GameWheelEnable = false;
         _GameWheelItems["Reinforce"].GetComponent<Button>().interactable = false;
         _GameWheelItems["Grow"].GetComponent<Button>().interactable = false;
         _GameWheelItems["Attack"].GetComponent<Button>().interactable = false;

@@ -38,7 +38,7 @@ public class ScanSurroundings : Node
 
         parent.parent.SetData("Mycelium Dict", tempMycRecord);
 
-        if(tempMycRecord.Count > 0) {
+        if(tempMycRecord.Count > 0) { // don't divide by 0
             float _HumanToMyceliumRatio = (float)GameManager.Instance._HumanCount / (float)tempMycRecord.Count;
 
             parent.parent.SetData("Scan Ratio", _HumanToMyceliumRatio);

@@ -34,7 +34,7 @@ public class CanBuild : Node
             }
 
             if(GameManager.Instance.HumanCountBiome2 >= 5 && GameManager.Instance.SettlementBuilt[2] == 0) {
-            // Check for the first available space to build our settlement!
+                // Check for the first available space to build our settlement!
                 foreach (KeyValuePair<(int, int), GridNode> elem in GameManager.Instance.CoordsToGridNode){
                     if(elem.Value.Occupation == 0 && elem.Value.SpecialClassifier == 2) {
                         temp[0] = elem.Key.Item1;

@@ -8,6 +8,7 @@ public class Mycelium : MonoBehaviour
     // ~ Instance and Variables ~
 
     // Every individual mecylium clump (1 per occupied grid node) will have their own private info
+    [SerializeField] private List<GameObject> _ReinforcementMushrooms;
     private int row;
     private int col;
     private int maxHealth = 10;
@@ -28,6 +29,9 @@ public class Mycelium : MonoBehaviour
 
     public bool actionReady = false;
 
+    // Animator Controller
+    private Animator _MycAnimator;
+
     // ~ Properties ~
 
     public int[] Coordinates{
@@ -43,6 +47,12 @@ public class Mycelium : MonoBehaviour
             row = value[0];
             col = value[1];
             return;
+        }
+    }
+
+    public Animator MycAnimator {
+        get {
+            return _MycAnimator;
         }
     }
 
@@ -110,6 +120,12 @@ public class Mycelium : MonoBehaviour
     
         // Set the healthbar to max
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
+
+        _MycAnimator = GetComponent<Animator>();
+        if(_MycAnimator != null) {
+            _MycAnimator.SetTrigger("Grow");
+        }
+
     }
     
     void OnDestroy()
@@ -156,6 +172,16 @@ public class Mycelium : MonoBehaviour
             toAttack.Damage();
         }
         GameManager.Instance.ActionPoints -= 6;
+
+        // Play Myc Attack Animation
+        if(_MycAnimator != null) {
+            _MycAnimator.SetTrigger("Attack");
+        }
+
+        // Play Grid Animation
+        if(gridSelect.GridAnimator != null) {
+            gridSelect.GridAnimator.SetTrigger("MycAttack");
+        }
         Reset();
         UIManager.Instance.DisableGameWheel();
     }
@@ -168,6 +194,10 @@ public class Mycelium : MonoBehaviour
         reinforced = true;
         currHealth += 5;
         GameManager.Instance.ActionPoints -= 3;
+
+        // Spawn the two reinforce mushrooms and they will play their spawn animation
+        _ReinforcementMushrooms[0].SetActive(true);
+        _ReinforcementMushrooms[1].SetActive(true);
         Reset();
         UIManager.Instance.DisableGameWheel();
     }
@@ -185,6 +215,9 @@ public class Mycelium : MonoBehaviour
 
                 GridNode gridCopy = GameManager.Instance.CoordsToGridNode[(row + i, col + j)];
 
+                // Have spore animation play on every grid both occupied and non occupied
+                gridCopy.GridAnimator.SetTrigger("MycAttack");
+
                 // Human
                 if(gridCopy.Occupation == 2) {
                     Human humanToDamage = gridCopy.Standing.GetComponent(typeof(Human)) as Human;
@@ -196,6 +229,9 @@ public class Mycelium : MonoBehaviour
 
             }
         }
+
+        // Play self destruct animation
+        GameManager.Instance.CoordsToGridNode[(row, col)].GridAnimator.SetTrigger("SelfDestruct");
 
         GameManager.Instance.ActionPoints -= 15;
 
@@ -214,13 +250,13 @@ public class Mycelium : MonoBehaviour
 
         // unhighlight the grid
         foreach(GridNode grid in unoccupiedGrids) {
-            grid.GridHighlight.ToggleHighlightChoice(false, Color.green);
+            grid.GridHighlight.ToggleHighlightChoice(false, new Color(0.0f, 1.0f, 0.0f, 0.3f));
             grid.Clickable = false;
             grid.MyceliumSelect = null;
         }
 
         foreach(GridNode grid in occupiedGrids) {
-            grid.GridHighlight.ToggleHighlightChoice(false, Color.red);
+            grid.GridHighlight.ToggleHighlightChoice(false, new Color(1.0f, 0.0f, 0.0f, 0.3f));
             grid.Clickable = false;
             grid.MyceliumSelect = null;
             if(grid.Standing.GetComponent<Human>() != null) {
@@ -238,10 +274,8 @@ public class Mycelium : MonoBehaviour
     }
 
     public void Damage() {
-        Debug.Log("Mycelium Hit!!!");
         currHealth -= 9; // Change this to 10! Just need reference right now
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
-        Debug.Log(currHealth);
     }
 
     // The following will toggle the mycelium highlight
@@ -320,13 +354,13 @@ public class Mycelium : MonoBehaviour
 
                 // Highlight the grids in the necessary color and give them their mycelium select
                 foreach(GridNode grid in unoccupiedGrids) {
-                    grid.GridHighlight.ToggleHighlightChoice(true, Color.green);
+                    grid.GridHighlight.ToggleHighlightChoice(true, new Color(0.0f, 1.0f, 0.0f, 0.3f));
                     grid.Clickable = true;
                     grid.MyceliumSelect = this;
                 }
 
                 foreach(GridNode grid in occupiedGrids) {
-                    grid.GridHighlight.ToggleHighlightChoice(true, Color.red);
+                    grid.GridHighlight.ToggleHighlightChoice(true, new Color(1.0f, 0.0f, 0.0f, 0.3f));
                     grid.Clickable = true;
                     grid.MyceliumSelect = this;
                     if(grid.Standing.GetComponent<Human>() != null) {
@@ -338,7 +372,6 @@ public class Mycelium : MonoBehaviour
                     }
                 }
 
-                Debug.Log("selected!");
                 selected = true;
                 mycHighlight.ToggleHighlight(true);
                 UIManager.Instance.EnableAndUpdateGameWheel();

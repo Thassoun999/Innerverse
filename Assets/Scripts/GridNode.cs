@@ -22,9 +22,20 @@ public class GridNode : MonoBehaviour {
     // Special Grid properties
     public int specialClassifier = 0; // Default to 0, 1 for biome 1, 2 for biome 2
 
+    // Animator Controller
+    private Animator _GridAnimator;
+
+    // ~ Properties ~
+
     public int[] Coordinates {
         get {
             return new int[] {row, col};
+        }
+    }
+
+    public Animator GridAnimator {
+        get {
+            return _GridAnimator;
         }
     }
 
@@ -87,6 +98,8 @@ public class GridNode : MonoBehaviour {
     {
         row = (int)transform.localPosition.x;
         col = (int)transform.localPosition.z;
+
+        _GridAnimator = GetComponent<Animator>();
     }
 
     void OnMouseDown()
@@ -97,16 +110,16 @@ public class GridNode : MonoBehaviour {
                 // This is where we pull up the wheel!
                 if (myceliumSelect.GridSelect != null) {
                     if(myceliumSelect.GridSelect.Occupation == 0) {
-                        myceliumSelect.GridSelect.GridHighlight.ToggleHighlightChoice(true, Color.green);
+                        myceliumSelect.GridSelect.GridHighlight.ToggleHighlightChoice(true, new Color(0.0f, 1.0f, 0.0f, 0.3f));
                     } else if (myceliumSelect.GridSelect.Occupation == 2 || myceliumSelect.GridSelect.Occupation == 3) {
-                        myceliumSelect.GridSelect.GridHighlight.ToggleHighlightChoice(true, Color.red);
+                        myceliumSelect.GridSelect.GridHighlight.ToggleHighlightChoice(true, new Color(1.0f, 0.0f, 0.0f, 0.3f));
                     }
                 }
 
                 myceliumSelect.GridSelect = this;
                 myceliumSelect.ActionReady = true;
                 selected = true;
-                gridHighlight.ToggleHighlightChoice(true, Color.blue);
+                gridHighlight.ToggleHighlightChoice(true, new Color(0.0f, 0.0f, 1.0f, 0.3f));
 
                 // Update game wheel here too on grid selection
                 UIManager.Instance.EnableAndUpdateGameWheel();
@@ -118,9 +131,9 @@ public class GridNode : MonoBehaviour {
                 selected = false;
 
                 if (occupation == 0){
-                    GridHighlight.ToggleHighlightChoice(true, Color.green);
+                    GridHighlight.ToggleHighlightChoice(true, new Color(0.0f, 1.0f, 0.0f, 0.3f));
                 } else if (occupation == 2 || occupation == 3){
-                    GridHighlight.ToggleHighlightChoice(true, Color.red);
+                    GridHighlight.ToggleHighlightChoice(true, new Color(1.0f, 0.0f, 0.0f, 0.3f));
 
                 }
 
@@ -137,9 +150,9 @@ public class GridNode : MonoBehaviour {
                 // Turn off the highlight on previous select if there is one
                 if (myceliumSelect.GridSelect != null) {
                     if (myceliumSelect.GridSelect.Occupation == 0){
-                        GridHighlight.ToggleHighlightChoice(true, Color.green);
+                        GridHighlight.ToggleHighlightChoice(true, new Color(0.0f, 1.0f, 0.0f, 0.3f));
                     } else if (myceliumSelect.GridSelect.Occupation == 2 || myceliumSelect.GridSelect.Occupation == 3){
-                        GridHighlight.ToggleHighlightChoice(true, Color.red);
+                        GridHighlight.ToggleHighlightChoice(true, new Color(1.0f, 0.0f, 0.0f, 0.3f));
 
                     }
                 }
@@ -149,7 +162,7 @@ public class GridNode : MonoBehaviour {
                 myceliumSelect.GridSelect = this;
                 myceliumSelect.ActionReady = true;
                 selected = true;
-                gridHighlight.ToggleHighlightChoice(true, Color.blue);
+                gridHighlight.ToggleHighlightChoice(true, new Color(0.0f, 0.0f, 1.0f, 0.3f));
 
                 // Update game wheel here too on grid selection
                 UIManager.Instance.EnableAndUpdateGameWheel();
@@ -161,9 +174,9 @@ public class GridNode : MonoBehaviour {
                 selected = false;
 
                 if (occupation == 0){
-                    GridHighlight.ToggleHighlightChoice(true, Color.green);
+                    GridHighlight.ToggleHighlightChoice(true, new Color(0.0f, 1.0f, 0.0f, 0.3f));
                 } else if (occupation == 2 || occupation == 3){
-                    GridHighlight.ToggleHighlightChoice(true, Color.red);
+                    GridHighlight.ToggleHighlightChoice(true, new Color(1.0f, 0.0f, 0.0f, 0.3f));
 
                 }
 
