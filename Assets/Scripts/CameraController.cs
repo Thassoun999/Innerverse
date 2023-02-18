@@ -8,17 +8,17 @@ public class CameraController : MonoBehaviour
     // ~ Instances and Variables ~
     
     [SerializeField] private Camera cam;
-    [SerializeField] private float mouseSensitivity = 0.05f;
+    [SerializeField] private float mouseSensitivity;
     // last position taken on mouse button down's frame to match against new positions
     public Vector3 lastPosition;
     // designated bounds for the zoom function's min and max zooms
-    [SerializeField] private float minSize = 1f;
-    [SerializeField] private float maxSize = 9f;
+    [SerializeField] private float minSize;
+    [SerializeField] private float maxSize;
     // designated field bounds for the min/max of the x and y transform position
-    [SerializeField] private float minX = -20;
-    [SerializeField] private float maxX = 60;
-    [SerializeField] private float minY = -15;
-    [SerializeField] private float maxY = 32;
+    [SerializeField] private float minX;
+    [SerializeField] private float maxX;
+    [SerializeField] private float minY;
+    [SerializeField] private float maxY;
     // float by which zoomSpeed will increment the orthographicSize by
     private float zoomSpeed = 0.5f;
 
