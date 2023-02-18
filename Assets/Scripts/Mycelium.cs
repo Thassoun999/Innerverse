@@ -274,10 +274,8 @@ public class Mycelium : MonoBehaviour
     }
 
     public void Damage() {
-        Debug.Log("Mycelium Hit!!!");
         currHealth -= 9; // Change this to 10! Just need reference right now
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
-        Debug.Log(currHealth);
     }
 
     // The following will toggle the mycelium highlight
