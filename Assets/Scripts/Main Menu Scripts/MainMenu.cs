@@ -5,20 +5,17 @@ using UnityEngine.SceneManagement;
 
     public class MainMenu : MonoBehaviour
 {
-    public void goToTutorial()
-    {
-        SceneManager.LoadScene("TutorialMenu");
-    }
-    public void goToMainMenu()
+    public void GoToMainMenu() 
     {
         SceneManager.LoadScene("MainMenu");
     }
-    public void playGame()
+    public void PlayGame()
     {
         // Using the SceneManager, get the current scene's index and increment to go to the next scene: playable game    
+        // Note: ONLY do this within the Main Menu Scene (this is the only case it makes sense)
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
-    public void quitGame()
+    public void QuitGame()
     {
         Application.Quit();
     }
