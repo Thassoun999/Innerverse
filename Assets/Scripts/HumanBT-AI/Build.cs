@@ -16,6 +16,7 @@ public class Build : Node
         int biomeSpecification = (int)GetData("Biome");
 
         SpawnManager.Instance.Spawn(buildCoords[0], buildCoords[1], "Settlement");
+        GameManager.Instance.PlayBuildSettlementSFX();
 
         return NodeState.SUCCESS;
 

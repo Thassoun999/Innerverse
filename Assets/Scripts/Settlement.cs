@@ -98,6 +98,7 @@ public class Settlement : MonoBehaviour
 
         // Set the healthbar to max
         _healthbar.UpdateHealthBar(maxHealth, currHealth);
+
     }
 
     void DestroySettlement() {
@@ -107,6 +108,7 @@ public class Settlement : MonoBehaviour
     void Update()
     {
         if (currHealth <= 0 && !dying) {
+            GameManager.Instance.CoordsToGridNode[(row, col)].PlayHumanDeathSFX();
             dying = true;
             gameObject.GetComponent<Animator>().SetTrigger("Death");
         }
@@ -169,6 +171,5 @@ public class Settlement : MonoBehaviour
             GameManager.Instance.CoordsToGridNode[(row, col)].OnMouseDownHumCall();
         }
     }
-
 
 }

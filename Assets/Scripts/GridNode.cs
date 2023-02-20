@@ -25,6 +25,9 @@ public class GridNode : MonoBehaviour {
     // Animator Controller
     private Animator _GridAnimator;
 
+    // Sounds sources
+    [SerializeField] private AudioSource[] _GridAudioSFXSources;
+
     // ~ Properties ~
 
     public int[] Coordinates {
@@ -105,6 +108,8 @@ public class GridNode : MonoBehaviour {
     {
         if(clickable) {
             if (!selected) {
+                _GridAudioSFXSources[5].Play();
+
                 // From here we need to send the grid coordinates to Mycelium and allow it to pick an action!
                 // This is where we pull up the wheel!
                 if (myceliumSelect.GridSelect != null) {
@@ -124,6 +129,8 @@ public class GridNode : MonoBehaviour {
                 UIManager.Instance.EnableAndUpdateGameWheel();
 
             } else {
+                _GridAudioSFXSources[6].Play();
+
                 // Disallow Mycelium from selecting an action and clear the coordinates it has previously received
                 myceliumSelect.GridSelect = null;
                 myceliumSelect.ActionReady = false;
@@ -145,6 +152,7 @@ public class GridNode : MonoBehaviour {
     public void OnMouseDownHumCall() {
         if(clickable) {
             if (!selected) {
+                _GridAudioSFXSources[5].Play();
 
                 // Turn off the highlight on previous select if there is one
                 if (myceliumSelect.GridSelect != null) {
@@ -167,6 +175,8 @@ public class GridNode : MonoBehaviour {
                 UIManager.Instance.EnableAndUpdateGameWheel();
 
             } else {
+                _GridAudioSFXSources[6].Play();
+
                 // Disallow Mycelium from selecting an action and clear the coordinates it has previously received
                 myceliumSelect.GridSelect = null;
                 myceliumSelect.ActionReady = false;
@@ -183,5 +193,22 @@ public class GridNode : MonoBehaviour {
                 UIManager.Instance.EnableAndUpdateGameWheel();
             }
         }
+    }
+
+    public void PlayExplosionSFX() {
+        int index = Random.Range(0, 2); // play 1 of 2 explosion sounds
+        _GridAudioSFXSources[index].Play();
+    }
+
+    public void PlaySelfDestructSFX() {
+        _GridAudioSFXSources[2].Play();
+    }
+
+    public void PlayHumanDeathSFX() {
+        _GridAudioSFXSources[3].Play();
+    }
+
+    public void PlayMyceliumDeathSFX() {
+        _GridAudioSFXSources[4].Play();
     }
 }
