@@ -91,14 +91,13 @@ public class GridNode : MonoBehaviour {
 
     void Awake()
     {
+        row = (int)transform.localPosition.x;
+        col = (int)transform.localPosition.z;
         gridHighlight = gameObject.GetComponent<Highlight>();
     }
 
     void Start()
     {
-        row = (int)transform.localPosition.x;
-        col = (int)transform.localPosition.z;
-
         _GridAnimator = GetComponent<Animator>();
     }
 
@@ -185,6 +184,4 @@ public class GridNode : MonoBehaviour {
             }
         }
     }
-
-    // Fix multiple blue grids
 }

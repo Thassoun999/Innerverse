@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 {
     public void GoToMainMenu() 
     {
+        ResetAll();
         SceneManager.LoadScene("MainMenu");
     }
     public void PlayGame()
@@ -18,5 +19,16 @@ using UnityEngine.SceneManagement;
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void ReloadGame() 
+    {
+        ResetAll();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void ResetAll() {
+        GameManager.Instance.ResetInstance();
+        UIManager.Instance.ResetInstance();
     }
 }

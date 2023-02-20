@@ -35,7 +35,6 @@ public class SpawnManager : MonoBehaviour
 
         _instance = this;
 
-        DontDestroyOnLoad(gameObject);
     }
 
     public void Spawn(int row, int col, string spawnSpecification) {
