@@ -12,7 +12,7 @@ public class Mycelium : MonoBehaviour
     private int row;
     private int col;
     private int maxHealth = 10;
-    private int currHealth;
+    public int currHealth;
     [SerializeField] private HealthBar _healthbar;
     private bool reinforced; 
 

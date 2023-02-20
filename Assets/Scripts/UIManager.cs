@@ -165,7 +165,7 @@ public class UIManager : MonoBehaviour
     }
 
     public void ResetInstance() {
-        Start();
+        DisableGameWheel();
     }
 
 }
