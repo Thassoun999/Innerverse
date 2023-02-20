@@ -40,6 +40,8 @@ public class GameManager : MonoBehaviour
     public int[] settlementBuilt = new int[] {0, 0, 0}; // Default, Special 1, Special 2 (if 0 no settlement, if 1 yes settlement)
 
     private string humanAction;
+    [SerializeField] private AudioSource _EnemyMovementSFX;
+    [SerializeField] private AudioSource _BuildSettlementSFX;
 
     [SerializeField] private HumanBTree _EnemyAIManager;
 
@@ -281,6 +283,7 @@ public class GameManager : MonoBehaviour
         // Play the Enemy's Turn
         if(!isPlayerTurn && !_GameOver) {
             _EnemyAIManager.Evaluate();
+            _EnemyMovementSFX.Play();
         }
         
         // WIN-LOSE Conditions! Only check these if the game isn't over yet!
@@ -441,5 +444,10 @@ public class GameManager : MonoBehaviour
         }
 
         _CoordstoGridNode.Clear();
+    }
+
+    public void PlayBuildSettlementSFX() {
+        _EnemyMovementSFX.Stop(); // need to stop this audio source if its in motion
+        _BuildSettlementSFX.Play();
     }
 }

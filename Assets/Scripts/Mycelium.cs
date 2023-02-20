@@ -32,6 +32,10 @@ public class Mycelium : MonoBehaviour
     // Animator Controller
     private Animator _MycAnimator;
 
+    // Sounds sources
+    [SerializeField] private AudioSource[] _MycAudioSFXSources;
+
+
     // ~ Properties ~
 
     public int[] Coordinates{
@@ -126,6 +130,9 @@ public class Mycelium : MonoBehaviour
             _MycAnimator.SetTrigger("Grow");
         }
 
+        // Play this on start (myc is growing)
+        _MycAudioSFXSources[0].Play();
+
     }
     
     void OnDestroy()
@@ -145,8 +152,11 @@ public class Mycelium : MonoBehaviour
     void Update()
     {
 
-        if (currHealth <= 0)
+        if (currHealth <= 0) {
+            // Play death sound on grid not the player or it'll cut out on destroy
+            GameManager.Instance.CoordsToGridNode[(row, col)].PlayMyceliumDeathSFX();
             Destroy(gameObject);
+        }
     }
 
     public void Grow() {
@@ -178,6 +188,8 @@ public class Mycelium : MonoBehaviour
         // Play Myc Attack Animation
         if(_MycAnimator != null) {
             _MycAnimator.SetTrigger("Attack");
+            // Play the sound effect
+            _MycAudioSFXSources[2].Play();
         }
 
         // Play Grid Animation
@@ -200,6 +212,10 @@ public class Mycelium : MonoBehaviour
         // Spawn the two reinforce mushrooms and they will play their spawn animation
         _ReinforcementMushrooms[0].SetActive(true);
         _ReinforcementMushrooms[1].SetActive(true);
+
+        // Play the sound effect
+        _MycAudioSFXSources[1].Play();
+
         Reset();
         UIManager.Instance.DisableGameWheel();
     }
@@ -220,6 +236,8 @@ public class Mycelium : MonoBehaviour
                 // Have spore animation play on every grid both occupied and non occupied
                 gridCopy.GridAnimator.SetTrigger("MycAttack");
 
+                // Play Mycelium SFX!!!
+
                 // Human
                 if(gridCopy.Occupation == 2) {
                     Human humanToDamage = gridCopy.Standing.GetComponent(typeof(Human)) as Human;
@@ -234,6 +252,7 @@ public class Mycelium : MonoBehaviour
 
         // Play self destruct animation
         GameManager.Instance.CoordsToGridNode[(row, col)].GridAnimator.SetTrigger("SelfDestruct");
+        GameManager.Instance.CoordsToGridNode[(row, col)].PlaySelfDestructSFX();
 
         GameManager.Instance.ActionPoints -= 15;
 
@@ -326,6 +345,7 @@ public class Mycelium : MonoBehaviour
         if(GameManager.Instance.PlayerTurn){
             // our object is being selected
             if (!selected) {
+                _MycAudioSFXSources[3].Play();
 
                 // Change our selection if we have already selected something
                 if (GameManager.Instance.IsSelecting != null) {
@@ -382,6 +402,7 @@ public class Mycelium : MonoBehaviour
                 mycHighlight.ToggleHighlight(true);
                 UIManager.Instance.EnableAndUpdateGameWheel();
             } else { // our object is being deselected
+                _MycAudioSFXSources[4].Play();
                 Reset();
                 UIManager.Instance.DisableGameWheel();
             }

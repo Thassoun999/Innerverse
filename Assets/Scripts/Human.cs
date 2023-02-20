@@ -125,6 +125,7 @@ public class Human : MonoBehaviour
     void Update()
     {
         if (currHealth <= 0 && !dying) { // this can only happen once
+            GameManager.Instance.CoordsToGridNode[(row, col)].PlayHumanDeathSFX();
             dying = true;
             gameObject.GetComponent<Animator>().SetTrigger("Death");
         }
@@ -234,6 +235,7 @@ public class Human : MonoBehaviour
         if(tempMyc) {
             // Grid Explosion Animation
             GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].GridAnimator.SetTrigger("HumAttack");
+            GameManager.Instance.CoordsToGridNode[(attackingCoords[0], attackingCoords[1])].PlayExplosionSFX();
             tempMyc.Damage();
             attackTime = false;
         }

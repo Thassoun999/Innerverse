@@ -10,6 +10,8 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject _MycSpawn;
     [SerializeField] GameObject _HumSpawn;
     [SerializeField] GameObject _Settlement;
+    [SerializeField] Material[] _MycMats;
+    [SerializeField] Material[] _HumMats;
 
 
     // ~ Properties ~
@@ -52,6 +54,10 @@ public class SpawnManager : MonoBehaviour
             GameObject temp = tempPar.transform.GetChild(0).gameObject;
             temp.transform.localPosition = position;
 
+            // Dynamic Mat
+            int index = Random.Range(0, _MycMats.Length);
+            temp.GetComponent<MeshRenderer>().material = _MycMats[index];
+
             Mycelium tempMyc = temp.GetComponent(typeof(Mycelium)) as Mycelium;
             GameManager.Instance.addMycelium(ref tempMyc);
     
@@ -60,6 +66,10 @@ public class SpawnManager : MonoBehaviour
             tempPar = GameObject.Instantiate(_HumSpawn, _HumSpawn.transform.position, _HumSpawn.transform.rotation);
             GameObject temp = tempPar.transform.GetChild(0).gameObject;
             temp.transform.localPosition = position;
+
+            // Dynamic Mat
+            int index = Random.Range(0, _HumMats.Length);
+            temp.GetComponent<MeshRenderer>().material = _HumMats[index];
             
             Human tempHum = temp.GetComponent(typeof(Human)) as Human;
             GameManager.Instance.addHuman(ref tempHum);
