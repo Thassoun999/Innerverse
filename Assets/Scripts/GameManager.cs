@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     // Static members can also be accessed directly from a class without instantiating an object of the class first.
     private static GameManager _instance;
     private bool isPlayerTurn;
-    private List<List<int>> _TwoDimensionalGridMap; // a 2D representation of isometric map on 2D list.
     private Dictionary<(int, int), GridNode> _CoordstoGridNode;
 
     public Dictionary<int ,Human> _HumanGroup; // instanceId to ref game object
@@ -43,6 +42,8 @@ public class GameManager : MonoBehaviour
     private string humanAction;
 
     [SerializeField] private HumanBTree _EnemyAIManager;
+
+    private bool _GameOver;
     
     // ~ Properties ~
 
@@ -58,6 +59,10 @@ public class GameManager : MonoBehaviour
                 Debug.LogError("Game Manager is NULL");
             
             return _instance;
+        }
+
+        set {
+            _instance = value;
         }
     }
 
@@ -207,61 +212,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public bool GameOver {
+        get {
+            return _GameOver;
+        }
+    }
+
     // ~ Methods ~
 
     // Either on AWAKE or on START instantiate a starting number of humans and mycelium!
 
     void Awake()
     {
-        if (_instance != null) { // need to ensure that this remains a singleton!
+        if (_instance != null && _instance != this) { // need to ensure that this remains a singleton!
             Destroy(gameObject);
             return;
         }
 
         _instance = this;
 
-        DontDestroyOnLoad(gameObject);
     }
 
     // Start is called before the first frame update
     void Start()
     {
         _CoordstoGridNode = new Dictionary<(int, int), GridNode>();
-        _TwoDimensionalGridMap = new List<List<int>>();
         GridNode[] grids;
 
         grids = FindObjectsOfType<GridNode>();
 
         isPlayerTurn = true; // always starts off as the player's turn (CHANGE THIS!)
-        currActionPoints = maxActionPoionts;
-
-        Dictionary<int, List<int>> tempDict = new Dictionary<int,  List<int>>(); // temporary dictionary we will convert to list later
-        
+        currActionPoints = maxActionPoionts;        
         
         // making the 2d map representation and the grid dictionary
         for (int i = 0; i < grids.Length; i++) {
             int[] coords = grids[i].Coordinates;
             _CoordstoGridNode[(coords[0], coords[1])] = grids[i];
-
-            if (tempDict.ContainsKey(coords[0])) {
-                tempDict[coords[0]].Add(coords[1]); // we will sort this by row to have an adjacency list (grid map!)
-
-            } else {
-                tempDict[coords[0]] = new List<int>(){coords[1]};
-            }
         }
 
         List<int> rowList = new List<int>(); // temporary row list
-        foreach(int key in tempDict.Keys) {
-            rowList.Add(key);
-        }
-        rowList.Sort(); // sort the rows
 
-        // create our two dimensional grid map
-        foreach(int row in rowList){
-            _TwoDimensionalGridMap.Add(tempDict[row]); // add column list to row index
-            _TwoDimensionalGridMap[row].Sort(); // sort the columns now
-        }
+        rowList.Sort(); // sort the rows
 
         // Declare dictionnaries
         _HumanGroup = new Dictionary<int, Human>();
@@ -281,41 +272,35 @@ public class GameManager : MonoBehaviour
         SpawnManager.Instance.Spawn(25, 26, "Settlement");
 
         UIManager.Instance.EndTurnButton(true);
+        _GameOver = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         // Play the Enemy's Turn
-        if(!isPlayerTurn) {
+        if(!isPlayerTurn && !_GameOver) {
             _EnemyAIManager.Evaluate();
         }
         
-        // WIN-LOSE Conditions!
+        // WIN-LOSE Conditions! Only check these if the game isn't over yet!
+        if(!_GameOver) {
+            // CHECK 1 -- Check to see if one side has a count of 0, the other side wins
+            if(_MyceliumCount == 0) {
+                _GameOver = true;
+                UIManager.Instance.EndGame("Human");
+            } else if(_HumanCount == 0 && _SettlementCount == 0) {
+                _GameOver = true;
+                UIManager.Instance.EndGame("Mycelium");
+            }
 
-        // CHECK 1 -- Check to see if one side has a count of 0, the other side wins
-        if(_MyceliumCount == 0) {
-            Debug.Log("Humans Win!!!");
-        } else if(_HumanCount == 0) {
-            Debug.Log("Mycelium Wins!!!!!");
-        }
-
-        // This should only be a possible win for mycelium since we are looking to cap this amnt
-        // CHECK 2 -- Check to see if >75% of the grid map is covered (is occupied) -- Winner is whoever has higher count
-        float ratio = (float)(_MyceliumCount + _HumanCount) / (float)(CoordsToGridNode.Count);
-        if(ratio >= 0.75) {
-            if(_MyceliumCount > _HumanCount) {
-                Debug.Log("Mycelium Wins!!!!!");
-            } else if(_HumanCount > _MyceliumCount) {
-                Debug.Log("Humans Win!!!");
+            // CHECK 2 -- Check to see if >75% of the grid map is covered by Mycelium
+            float ratio = (float)(_MyceliumCount) / (float)(CoordsToGridNode.Count);
+            if(ratio >= 0.11) { // Rounds up to 99 or 100 Mycelium on the map
+                _GameOver = true;
+                UIManager.Instance.EndGame("Mycelium");
             }
         }
-
-        // CHECK 3 -- Check to see if all settlements have been destroyed, if this is done then the Mycelium win
-        if(_SettlementCount == 0) {
-            Debug.Log("Mycelium Wins!!!!!");
-        }
-
     }
 
     // May be a good idea to make this a coroutine -- deactivate player input and wait for animations to finish!
@@ -431,5 +416,30 @@ public class GameManager : MonoBehaviour
         _SettlementGroup.Remove(instanceId);
         _SettlementCount--;
         return;
+    }
+
+    public void ResetInstance() {
+        foreach(KeyValuePair<int, Human> elem in _HumanGroup) {
+            Destroy(elem.Value.gameObject);
+            _HumanCount--;
+        }
+        foreach(KeyValuePair<int, Mycelium> elem in _MyceliumGroup) {
+            Destroy(elem.Value.gameObject);
+            MyceliumCount--;
+        }
+        foreach(KeyValuePair<int, Settlement> elem in _SettlementGroup) {
+            Destroy(elem.Value.gameObject);
+            _SettlementCount--;
+        }
+
+        _SettlementGroup.Clear();
+        _HumanGroup.Clear();
+        _MyceliumGroup.Clear();
+
+        foreach(KeyValuePair<(int, int), GridNode> elem in _CoordstoGridNode) {
+            Destroy(elem.Value);
+        }
+
+        _CoordstoGridNode.Clear();
     }
 }

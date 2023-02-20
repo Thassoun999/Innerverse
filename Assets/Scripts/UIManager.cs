@@ -14,6 +14,9 @@ public class UIManager : MonoBehaviour
     public GameObject ActionBar; // 15 bars (the mushroom being the last bar!)
     public GameObject GameWheel;
     public GameObject ThornsIcon;
+    public GameObject EndGamePanel;
+    public GameObject HumanWin;
+    public GameObject MyceliumWin;
     private Dictionary<string, GameObject> _GameWheelItems;
 
     private float[] actionBarFillAmount = new float[] {0f, 0.335f, 0.382f, 0.429f, 0.48f, 0.527f, 0.574f, 0.621f, 0.669f, 0.716f, 0.764f, 0.815f, 0.858f, 0.909f, 0.957f, 1.0f};
@@ -40,8 +43,6 @@ public class UIManager : MonoBehaviour
         }
 
         _instance = this;
-
-        DontDestroyOnLoad(gameObject);
     
         _GameWheelItems = new Dictionary<string, GameObject>();
 
@@ -62,9 +63,15 @@ public class UIManager : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        if((GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()))
-            EndTurnButton(true);
+    {   
+        if(!GameManager.Instance.GameOver) {
+             if((GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()))
+                EndTurnButton(true);
+        } else { // If the game's over don't accept any input!
+            DisableGameWheel();
+            EndTurnButton(false);
+        }
+
 
         // Update how many action points we have left
         ActionBar.GetComponent<Image>().fillAmount = actionBarFillAmount[GameManager.Instance.ActionPoints];
@@ -146,6 +153,19 @@ public class UIManager : MonoBehaviour
 
     public void Grow() {
         GameManager.Instance.IsSelecting.Grow();
+    }
+
+    public void EndGame(string outcome) {
+        EndGamePanel.SetActive(true);
+        if(outcome == "Mycelium") {
+            MyceliumWin.SetActive(true);
+        } else if(outcome == "Human") {
+            HumanWin.SetActive(true);
+        }
+    }
+
+    public void ResetInstance() {
+        Start();
     }
 
 }

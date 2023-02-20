@@ -130,9 +130,11 @@ public class Mycelium : MonoBehaviour
     
     void OnDestroy()
     {
-        GameManager.Instance.removeMycelium(this.gameObject.GetInstanceID());
-        GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
-        GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+        if(!GameManager.Instance.GameOver){
+            GameManager.Instance.removeMycelium(this.gameObject.GetInstanceID());
+            GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
+            GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+        }
     }
 
     // Update is called once per frame
@@ -313,6 +315,10 @@ public class Mycelium : MonoBehaviour
 
     void OnMouseDown()
     {
+        // The game's over, don't take clicks!
+        if(GameManager.Instance.GameOver)
+            return;
+
         // Don't do anything if it's not the player's turn + if humans still moving
         if(!(GameManager.Instance.PlayerTurn && GameManager.Instance.NoHumanMovement()))
             return;

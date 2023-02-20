@@ -64,12 +64,14 @@ public class Settlement : MonoBehaviour
 
     void OnDestroy()
     {
-        int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
-        GameManager.Instance.SettlementBuilt[biomeSpec] = 0;
+        if(!GameManager.Instance.GameOver){
+            int biomeSpec = GameManager.Instance.CoordsToGridNode[(row, col)].SpecialClassifier;
+            GameManager.Instance.SettlementBuilt[biomeSpec] = 0;
 
-        GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0;
-        GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null;
-        GameManager.Instance.removeSettlement(this.gameObject.GetInstanceID());
+            GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0;
+            GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null;
+            GameManager.Instance.removeSettlement(this.gameObject.GetInstanceID());
+        }
     }
 
     void Start()

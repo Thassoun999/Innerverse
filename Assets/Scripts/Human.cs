@@ -107,9 +107,11 @@ public class Human : MonoBehaviour
 
     void OnDestroy()
     {
-        GameManager.Instance.removeHuman(this.gameObject.GetInstanceID());
-        GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
-        GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+        if(!GameManager.Instance.GameOver){
+            GameManager.Instance.removeHuman(this.gameObject.GetInstanceID());
+            GameManager.Instance.CoordsToGridNode[(row, col)].Occupation = 0; // set to None
+            GameManager.Instance.CoordsToGridNode[(row, col)].Standing = null; // set to null
+        }
 
     }
 
