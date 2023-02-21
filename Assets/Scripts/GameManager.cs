@@ -297,7 +297,7 @@ public class GameManager : MonoBehaviour
                 UIManager.Instance.EndGame("Mycelium");
             }
 
-            // CHECK 2 -- Check to see if >75% of the grid map is covered by Mycelium
+            // CHECK 2 -- Check to see if 11% of the grid map is covered by Mycelium
             float ratio = (float)(_MyceliumCount) / (float)(CoordsToGridNode.Count);
             if(ratio >= 0.11) { // Rounds up to 99 or 100 Mycelium on the map
                 _GameOver = true;
