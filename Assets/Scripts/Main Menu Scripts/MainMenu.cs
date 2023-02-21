@@ -13,8 +13,13 @@ using TMPro;
 
     public void GoToMainMenu() 
     {
+    // timescale set back to 1 in case the user exits to the main menu from the pause menu, ensures game time isn't perma-slow
+    // until the escape button is hit again
+        Time.timeScale = 1f;
         ResetAll();
         StartCoroutine(LoadAsynchronously(0));
+
+
     }
     public void PlayGame()
     {
